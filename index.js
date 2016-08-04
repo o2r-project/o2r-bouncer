@@ -15,6 +15,9 @@
  *
  */
 
+// override global http proxy 
+require('global-tunnel').initialize();
+
 const config      = require('./config/config');
 const debug       = require('debug');
 
