@@ -12,7 +12,7 @@ WORKDIR /bouncer
 RUN npm install
 
 # dirty hack because global-tunnel is unmaintained and needs newer tunnel version
-RUN sed -i 's/0\.0\.2/0\.\0.4/' node_modules/global-tunnel/package.json \
+RUN sed -i 's/0\.0\.2/0\.0\.4/' node_modules/global-tunnel/package.json \
   && npm install
 
 CMD npm start
