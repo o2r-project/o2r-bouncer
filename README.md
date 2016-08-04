@@ -50,6 +50,6 @@ See the [ORCiD Guide](https://members.orcid.org/api/accessing-public-api). As a 
 
 ## License
 
-o2r muncher is licensed under Apache License, Version 2.0, see file LICENSE.
+o2r bouncer is licensed under Apache License, Version 2.0, see file LICENSE.
 
 Copyright (C) 2016 - o2r project.
