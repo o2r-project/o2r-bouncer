@@ -1,0 +1,26 @@
+{
+  "name": "bouncer",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "mocha",
+    "debug": "DEBUG=muncher,executor node index.js"
+  },
+  "author": "o2r-project",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/o2r-project/o2r-muncher.git"
+  },
+  "dependencies": {
+    "connect-mongodb-session": "^1.1.1",
+    "debug": "^2.2.0",
+    "express": "^4.13.4",
+    "express-session": "^1.14.0",
+    "mongoose": "^4.4.20",
+    "passport": "^0.3.2",
+    "passport-oauth2": "^1.3.0"
+  }
+}
