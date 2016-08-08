@@ -15,7 +15,7 @@
  *
  */
 
-// override global http proxy 
+// override global http proxy
 require('global-tunnel').initialize();
 
 const config      = require('./config/config');
@@ -103,11 +103,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api/v1/auth/login', passport.authenticate('oauth2'), (req, res) => {
-  res.send(JSON.stringify({
-    'message' : 'authenticated',
-    'orcid':    req.user.orcid,
-    'name':     req.user.name
-  }));
+  res.redirect('/'); // redirect to the o2r platform, so that the user is returned to the webpage.
 });
 
 app.get('/api/v1/auth/whoami', (req, res) => {
