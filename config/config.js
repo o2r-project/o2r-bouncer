@@ -56,4 +56,12 @@ c.login.redirect = '/';
 c.logout = {};
 c.logout.redirect = '/';
 
+// user levels
+c.user = {};
+c.user.level = {};
+c.user.level.user = {};
+c.user.level.user.details = {};
+c.user.level.user.details.view = 100;
+c.user.level.user.details.edit = 500;
+
 module.exports = c;

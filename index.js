@@ -41,6 +41,10 @@ mongoose.connection.on('error', () => {
 const passport    = require('passport');
 const OAuth2Strat = require('passport-oauth2').Strategy;
 
+// load controllers
+var controllers = {};
+controllers.user  = require('./controllers/user');
+
 // make sure required settings without defaults are availabe
 if(typeof config.oauth.default.clientID == 'undefined' | 
   typeof config.oauth.default.clientSecret == 'undefined') {
@@ -112,6 +116,20 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// set content type for all responses (bouncer never serves content)
+app.use('/api/', (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+
+  var orcid = '';
+  if (req.user && req.user.orcid) {
+    orcid = ' | orcid: ' + req.user.orcid;
+  }
+  debug('REQUEST %s %s authenticated user: %s | session: %s',
+    req.method, req.path, req.isAuthenticated(), req.session.id, orcid);
+  
+  next();
+});
+
 app.use('/api/v1/auth/login', passport.authenticate('oauth2'), (req, res) => {
   debug('Receiving callback from authentication service. User in session %s is logged in.', req.sessionID);
   res.redirect(config.login.redirect);
@@ -137,6 +155,10 @@ app.get('/api/v1/auth/whoami', (req, res) => {
     res.status(401).send(JSON.stringify({'error': 'not authenticated'}));
   }
 });
+
+app.get('/api/v1/user', controllers.user.view);
+app.get('/api/v1/user/:id', controllers.user.viewSingle);
+app.patch('/api/v1/user/:id', controllers.user.patchLevel);
 
 app.listen(config.net.port, () => {
   debug('bouncer v%s.%s.%s api %s listening on port %s',
