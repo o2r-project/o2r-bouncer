@@ -15,6 +15,8 @@
  *
  */
 
+/* eslint-disable */
+
 /*
  *  This file shows the minimal required code to implement the validation of
  *  the authentication details. It will read the session cookie from the user
