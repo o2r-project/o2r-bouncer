@@ -19,7 +19,7 @@
 require('global-tunnel').initialize();
 
 const config      = require('./config/config');
-const debug       = require('debug');
+const debug       = require('debug')('bouncer');
 
 const express     = require('express');
 const session     = require('express-session');
@@ -31,7 +31,7 @@ const MongoStore  = require('connect-mongodb-session')(session);
 
 mongoose.connect(config.mongo.location + config.mongo.database);
 mongoose.connection.on('error', () => {
-  console.log('could not connect to mongodb on %s%s, ABORT!',
+  console.error('***  Could not connect to mongodb on %s%s, ABORT!',
       config.mongo.location,
       config.mongo.database
   );
@@ -40,6 +40,16 @@ mongoose.connection.on('error', () => {
 
 const passport    = require('passport');
 const OAuth2Strat = require('passport-oauth2').Strategy;
+
+// make sure required settings without defaults are availabe
+if(typeof config.oauth.default.clientID == 'undefined' | 
+  typeof config.oauth.default.clientSecret == 'undefined') {
+  console.error("*** Cannot start bouncer because: %s %s",
+    (typeof config.oauth.default.clientID == 'undefined') ? "clientID is missing;": "",
+    (typeof config.oauth.default.clientSecret == 'undefined') ? "clientSecret is missing;": ""
+  );
+  process.exit(4);
+}
 
 // configure oauth2 strategy for orcid use
 const oauth2 = new OAuth2Strat(
@@ -87,7 +97,7 @@ const mongoStore = new MongoStore({
 });
 
 mongoStore.on('error', err => {
-  console.log(error);
+  console.error(err);
   process.exit(3);
 });
 
@@ -95,7 +105,7 @@ app.use(session({
   secret: config.sessionsecret,
   resave: true,
   saveUninitialized: true,
-  maxAge: 1000*60*60*24*7,
+  maxAge: 1000 * 60 * 60 * 24 * 7,
   store: mongoStore
 }));
 
@@ -103,7 +113,17 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api/v1/auth/login', passport.authenticate('oauth2'), (req, res) => {
-  res.redirect('/'); // redirect to the o2r platform, so that the user is returned to the webpage.
+  debug('Receiving callback from authentication service. User in session %s is logged in.', req.sessionID);
+  res.redirect(config.login.redirect);
+});
+
+app.use('/api/v1/auth/logout', (req, res) => {
+  // simple req.logout seems not to suffice for some users: http://stackoverflow.com/questions/13758207/why-is-passportjs-in-node-not-removing-session-on-logout
+  req.logout();
+  req.session.destroy(function (err) {
+    debug('User session %s is logged out, and session is destroyed, error: %s', req.sessionID, err);
+    res.redirect(config.logout.redirect);
+  });
 });
 
 app.get('/api/v1/auth/whoami', (req, res) => {
@@ -119,7 +139,7 @@ app.get('/api/v1/auth/whoami', (req, res) => {
 });
 
 app.listen(config.net.port, () => {
-  console.log('bouncer v%s.%s.%s api %s listening on port %s',
+  debug('bouncer v%s.%s.%s api %s listening on port %s',
       config.version.major,
       config.version.minor,
       config.version.bug,

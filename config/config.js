@@ -50,4 +50,10 @@ c.oauth.default = {
 // session secret
 c.sessionsecret = env.SESSION_SECRET || 'o2r';
 
+c.login = {};
+c.login.redirect = '/';
+
+c.logout = {};
+c.logout.redirect = '/';
+
 module.exports = c;
