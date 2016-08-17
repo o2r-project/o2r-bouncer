@@ -24,7 +24,7 @@ var env = process.env;
 // Information about bouncer
 c.version.major  = 0;
 c.version.minor  = 2;
-c.version.bug    = 0;
+c.version.bug    = 1;
 c.version.api    = 1;
 
 // network & database

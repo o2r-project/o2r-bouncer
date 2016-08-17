@@ -67,8 +67,8 @@ passport.serializeUser((user, cb) => {
   cb(null, user.orcid);
 });
 
-passport.deserializeUser((orcid, cb) => {
-  User.findOne(orcid, (err, user) => {
+passport.deserializeUser((id, cb) => {
+  User.findOne({orcid: id}, (err, user) => {
     if (err) cb(err);
     cb(null, user);
   });
