@@ -23,7 +23,7 @@ var env = process.env;
 
 // Information about bouncer
 c.version.major  = 0;
-c.version.minor  = 2;
+c.version.minor  = 3;
 c.version.bug    = 1;
 c.version.api    = 1;
 
@@ -59,6 +59,7 @@ c.logout.redirect = '/';
 // user levels
 c.user = {};
 c.user.level = {};
+c.user.level.view_status = 500;
 c.user.level.user = {};
 c.user.level.user.details = {};
 c.user.level.user.details.view = 100;

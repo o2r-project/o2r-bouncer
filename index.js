@@ -18,67 +18,67 @@
 // override global http proxy
 require('global-tunnel').initialize();
 
-const config      = require('./config/config');
-const debug       = require('debug')('bouncer');
+const config = require('./config/config');
+const debug = require('debug')('bouncer');
 
-const express     = require('express');
-const session     = require('express-session');
-const app         = express();
+const express = require('express');
+const session = require('express-session');
+const app = express();
 
-const mongoose    = require('mongoose');
-const User        = require('./lib/model/user');
-const MongoStore  = require('connect-mongodb-session')(session);
+const mongoose = require('mongoose');
+const User = require('./lib/model/user');
+const MongoStore = require('connect-mongodb-session')(session);
 
 mongoose.connect(config.mongo.location + config.mongo.database);
 mongoose.connection.on('error', () => {
   console.error('***  Could not connect to mongodb on %s%s, ABORT!',
-      config.mongo.location,
-      config.mongo.database
+    config.mongo.location,
+    config.mongo.database
   );
   process.exit(2);
 });
 
-const passport    = require('passport');
+const passport = require('passport');
 const OAuth2Strat = require('passport-oauth2').Strategy;
 
 // load controllers
 var controllers = {};
-controllers.user  = require('./controllers/user');
+controllers.user = require('./controllers/user');
 
 // make sure required settings without defaults are availabe
-if(typeof config.oauth.default.clientID == 'undefined' | 
+if (typeof config.oauth.default.clientID == 'undefined' |
   typeof config.oauth.default.clientSecret == 'undefined') {
   console.error("*** Cannot start bouncer because: %s %s",
-    (typeof config.oauth.default.clientID == 'undefined') ? "clientID is missing;": "",
-    (typeof config.oauth.default.clientSecret == 'undefined') ? "clientSecret is missing;": ""
+    (typeof config.oauth.default.clientID == 'undefined') ? "clientID is missing;" : "",
+    (typeof config.oauth.default.clientSecret == 'undefined') ? "clientSecret is missing;" : ""
   );
   process.exit(4);
 }
 
 // configure oauth2 strategy for orcid use
 const oauth2 = new OAuth2Strat(
-    config.oauth.default,
-    (req, accessToken, refreshToken, params, profile, cb) => {
-      User.findOne({orcid: params.orcid}, (err, user) => {
-        if (err) return cb(err);
-        if (user) {
-          profile.orcid = user.orcid;
-          profile.name  = user.name;
-          return cb(null, profile);
-        } else {
-          let newUser = new User({orcid: params.orcid, name: params.name});
-          newUser.save(err => {
-            if (err) {
-              return cb(err);
-            } else {
-              profile.orcid = params.orcid;
-              profile.name  = params.name;
-              return cb(null, profile);
-            }
-          });
-        }
-      });
-    }
+  config.oauth.default,
+  (req, accessToken, refreshToken, params, profile, cb) => {
+    User.findOne({ orcid: params.orcid }, (err, user) => {
+      if (err) return cb(err);
+      if (user) {
+        profile.orcid = user.orcid;
+        profile.name = user.name;
+        return cb(null, profile);
+      } else {
+        let newUser = new User({ orcid: params.orcid, name: params.name });
+        newUser.save(err => {
+          if (err) {
+            return cb(err);
+          } else {
+            profile.orcid = params.orcid;
+            profile.name = params.name;
+            return cb(null, profile);
+          }
+        });
+      }
+    });
+  }
 );
 
 passport.use(oauth2);
@@ -90,7 +90,7 @@ passport.serializeUser((user, cb) => {
 
 passport.deserializeUser((id, cb) => {
   debug("Deserialize for %s", id);
-  User.findOne({orcid: id}, (err, user) => {
+  User.findOne({ orcid: id }, (err, user) => {
     if (err) cb(err);
     cb(null, user);
   });
@@ -117,6 +117,26 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get('/status', function (req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  if (!req.isAuthenticated() || req.user.level < config.user.level.view_status) {
+    res.status(401).send('{"error":"not authenticated or not allowed"}');
+    return;
+  }
+
+  var response = {
+    version: config.version,
+    levels: config.user.level,
+    mongodb: config.mongo,
+    oauth: {
+      name: oauth2.name,
+      callbackURL: oauth2._callbackURL
+    }
+  };
+  res.send(response);
+});
+
+
 // set content type for all responses (bouncer never serves content)
 app.use('/api/', (req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
@@ -127,7 +147,7 @@ app.use('/api/', (req, res, next) => {
   }
   debug('REQUEST %s %s authenticated user: %s | session: %s',
     req.method, req.path, req.isAuthenticated(), req.session.id, orcid);
-  
+
   next();
 });
 
@@ -149,11 +169,11 @@ app.get('/api/v1/auth/whoami', (req, res) => {
   if (req.isAuthenticated()) {
     let answer = {
       orcid: req.user.orcid,
-      name:  req.user.name
+      name: req.user.name
     };
     res.send(JSON.stringify(answer));
   } else {
-    res.status(401).send(JSON.stringify({'error': 'not authenticated'}));
+    res.status(401).send(JSON.stringify({ 'error': 'not authenticated' }));
   }
 });
 
@@ -163,10 +183,10 @@ app.patch('/api/v1/user/:id', controllers.user.patchLevel);
 
 app.listen(config.net.port, () => {
   debug('bouncer v%s.%s.%s api %s listening on port %s',
-      config.version.major,
-      config.version.minor,
-      config.version.bug,
-      config.version.api,
-      config.net.port
-      );
+    config.version.major,
+    config.version.minor,
+    config.version.bug,
+    config.version.api,
+    config.net.port
+  );
 });
