@@ -125,6 +125,7 @@ app.get('/status', function (req, res) {
   }
 
   var response = {
+    service: "bouncer",
     version: config.version,
     levels: config.user.level,
     mongodb: config.mongo,
