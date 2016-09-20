@@ -1,6 +1,6 @@
 {
   "name": "bouncer",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/o2r-project/o2r-muncher.git"
+    "url": "https://github.com/o2r-project/o2r-bouncer.git"
   },
   "dependencies": {
     "connect-mongodb-session": "^1.1.1",
