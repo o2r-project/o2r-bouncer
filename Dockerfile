@@ -29,11 +29,10 @@ RUN apk add --no-cache \
   && rm -rf /var/cache
 
 WORKDIR /bouncer
-RUN npm install --production
 
 # dirty hack because global-tunnel is unmaintained and needs newer tunnel version
 RUN sed -i 's/0\.0\.2/0\.0\.4/' node_modules/global-tunnel/package.json \
-  && npm install
+  && npm install --production
 
 ENTRYPOINT ["/sbin/dumb-init", "--"]
 CMD ["npm", "start" ]
