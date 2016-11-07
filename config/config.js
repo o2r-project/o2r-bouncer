@@ -23,7 +23,7 @@ var env = process.env;
 
 // Information about bouncer
 c.version.major  = 0;
-c.version.minor  = 3;
+c.version.minor  = 4;
 c.version.bug    = 0;
 c.version.api    = 1;
 
@@ -31,6 +31,9 @@ c.version.api    = 1;
 c.net.port         = env.BOUNCER_PORT || 8083;
 c.mongo.location   = env.BOUNCER_MONGODB || 'mongodb://localhost/';
 c.mongo.database   = env.BOUNCER_MONGODB_DATABASE || 'muncher';
+c.mongo.inital_connection_attempts = 30;
+c.mongo.inital_connection_max_delay = 3000;
+c.mongo.inital_connection_initial_delay = 10;
 
 // fix mongo location if trailing slash was omitted
 if (c.mongo.location[c.mongo.location.length-1] !== '/') {
