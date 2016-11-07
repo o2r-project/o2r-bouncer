@@ -101,113 +101,113 @@ passport.deserializeUser((id, cb) => {
   });
 });
 
-function initApp() {
-  const mongoStore = new MongoStore({
-    uri: config.mongo.location + config.mongo.database,
-    collection: 'sessions'
-  });
+function initApp(callback) {
+  debug('Initialize application');
 
-  mongoStore.on('error', err => {
-    console.error(err);
-    process.exit(3);
-  });
-
-  app.use(session({
-    secret: config.sessionsecret,
-    resave: true,
-    saveUninitialized: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    store: mongoStore
-  }));
-
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  app.get('/status', function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    if (!req.isAuthenticated() || req.user.level < config.user.level.view_status) {
-      res.status(401).send('{"error":"not authenticated or not allowed"}');
-      return;
-    }
-
-    var response = {
-      service: "bouncer",
-      version: config.version,
-      levels: config.user.level,
-      mongodb: config.mongo,
-      oauth: {
-        name: oauth2.name,
-        callbackURL: oauth2._callbackURL
-      }
-    };
-    res.send(response);
-  });
-
-
-  // set content type for all responses (bouncer never serves content)
-  app.use('/api/', (req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
-
-    var orcid = '';
-    if (req.user && req.user.orcid) {
-      orcid = ' | orcid: ' + req.user.orcid;
-    }
-    debug('REQUEST %s %s authenticated user: %s | session: %s',
-      req.method, req.path, req.isAuthenticated(), req.session.id, orcid);
-
-    next();
-  });
-
-  app.use('/api/v1/auth/login', passport.authenticate('oauth2'), (req, res) => {
-    debug('Receiving callback from authentication service. User in session %s is logged in.', req.sessionID);
-    res.redirect(config.login.redirect);
-  });
-
-  app.use('/api/v1/auth/logout', (req, res) => {
-    // simple req.logout seems not to suffice for some users: http://stackoverflow.com/questions/13758207/why-is-passportjs-in-node-not-removing-session-on-logout
-    req.logout();
-    req.session.destroy(function (err) {
-      debug('User session %s is logged out, and session is destroyed, error: %s', req.sessionID, err);
-      res.redirect(config.logout.redirect);
+  try {
+    const mongoStore = new MongoStore({
+      uri: config.mongo.location + config.mongo.database,
+      collection: 'sessions'
     });
-  });
 
-  app.get('/api/v1/auth/whoami', (req, res) => {
-    if (req.isAuthenticated()) {
-      let answer = {
-        orcid: req.user.orcid,
-        name: req.user.name
+    mongoStore.on('error', err => {
+      debug('Error connecting with MongoStore: %s', err);
+      callback(err);
+    });
+
+    app.use(session({
+      secret: config.sessionsecret,
+      resave: true,
+      saveUninitialized: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      store: mongoStore
+    }));
+
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    app.get('/status', function (req, res) {
+      res.setHeader('Content-Type', 'application/json');
+      if (!req.isAuthenticated() || req.user.level < config.user.level.view_status) {
+        res.status(401).send('{"error":"not authenticated or not allowed"}');
+        return;
+      }
+
+      var response = {
+        service: "bouncer",
+        version: config.version,
+        levels: config.user.level,
+        mongodb: config.mongo,
+        oauth: {
+          name: oauth2.name,
+          callbackURL: oauth2._callbackURL
+        }
       };
-      res.send(JSON.stringify(answer));
-    } else {
-      res.status(401).send(JSON.stringify({ 'error': 'not authenticated' }));
-    }
-  });
+      res.send(response);
+    });
 
-  app.get('/api/v1/user', controllers.user.view);
-  app.get('/api/v1/user/:id', controllers.user.viewSingle);
-  app.patch('/api/v1/user/:id', controllers.user.patchLevel);
+    // set content type for all responses (bouncer never serves content)
+    app.use('/api/', (req, res, next) => {
+      res.setHeader('Content-Type', 'application/json');
 
-  app.listen(config.net.port, () => {
-    debug('bouncer v%s.%s.%s api %s listening on port %s',
-      config.version.major,
-      config.version.minor,
-      config.version.bug,
-      config.version.api,
-      config.net.port
-    );
-  });
+      var orcid = '';
+      if (req.user && req.user.orcid) {
+        orcid = ' | orcid: ' + req.user.orcid;
+      }
+      debug('REQUEST %s %s authenticated user: %s | session: %s',
+        req.method, req.path, req.isAuthenticated(), req.session.id, orcid);
 
+      next();
+    });
+
+    app.use('/api/v1/auth/login', passport.authenticate('oauth2'), (req, res) => {
+      debug('Receiving callback from authentication service. User in session %s is logged in.', req.sessionID);
+      res.redirect(config.login.redirect);
+    });
+
+    app.use('/api/v1/auth/logout', (req, res) => {
+      // simple req.logout seems not to suffice for some users: http://stackoverflow.com/questions/13758207/why-is-passportjs-in-node-not-removing-session-on-logout
+      req.logout();
+      req.session.destroy(function (err) {
+        debug('User session %s is logged out, and session is destroyed, error: %s', req.sessionID, err);
+        res.redirect(config.logout.redirect);
+      });
+    });
+
+    app.get('/api/v1/auth/whoami', (req, res) => {
+      if (req.isAuthenticated()) {
+        let answer = {
+          orcid: req.user.orcid,
+          name: req.user.name
+        };
+        res.send(JSON.stringify(answer));
+      } else {
+        res.status(401).send(JSON.stringify({ 'error': 'not authenticated' }));
+      }
+    });
+
+    app.get('/api/v1/user', controllers.user.view);
+    app.get('/api/v1/user/:id', controllers.user.viewSingle);
+    app.patch('/api/v1/user/:id', controllers.user.patchLevel);
+
+    app.listen(config.net.port, () => {
+      debug('bouncer v%s.%s.%s API version %s listening on port %s',
+        config.version.major,
+        config.version.minor,
+        config.version.bug,
+        config.version.api,
+        config.net.port
+      );
+    });
+
+  } catch (err) {
+    callback(err);
+  }
+
+  callback(null);
 }
 
-// delay app startup to when MongoDB is available
-mongoose.connection.on('connected', function () {
-  debug('Mongoose connection open to %s: %s', dbURI, mongoose.connection.readyState);
-
-  initApp();
-});
-
-// auto_reconnect is on by default and only for RE(!)connects, not for the initial attempt: http://bites.goodeggs.com/posts/reconnecting-to-mongodb-when-mongoose-connect-fails-at-startup/
+// auto_reconnect is on by default and only for RE(!)connects, BUT not for the initial attempt: http://bites.goodeggs.com/posts/reconnecting-to-mongodb-when-mongoose-connect-fails-at-startup/
 var dbBackoff = backoff.fibonacci({
   randomisationFactor: 0,
   initialDelay: config.mongo.inital_connection_initial_delay,
@@ -216,15 +216,30 @@ var dbBackoff = backoff.fibonacci({
 
 dbBackoff.failAfter(config.mongo.inital_connection_attempts);
 dbBackoff.on('backoff', function (number, delay) {
-  debug('Trying to connect to MongoDB (#%s) in %sms', number, delay);
+  debug('Trying to connect to MongoDB in %sms', delay);
 });
 dbBackoff.on('ready', function (number, delay) {
-  debug('Connect to MongoDB (#%s)', number, delay);
+  debug('Connect to MongoDB (#%s) ...', number);
   mongoose.connect(dbURI, (err) => {
     if (err) {
+      debug('Error during connect: %s', err);
+      mongoose.disconnect(() => {
+        debug('Mongoose: Disconnected all connections.');
+      });
       dbBackoff.backoff();
     } else {
+      // delay app startup to when MongoDB is available
       debug('Initial connection open to %s: %s', dbURI, mongoose.connection.readyState);
+      initApp((err) => {
+        if (err) {
+          debug('Error during init!\n%s', err);
+          mongoose.disconnect(() => {
+            debug('Mongoose: Disconnected all connections.');
+          });
+          dbBackoff.backoff();
+        }
+        debug('Started application.');
+      });
     }
   });
 });
