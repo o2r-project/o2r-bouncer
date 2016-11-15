@@ -171,7 +171,9 @@ function initApp(callback) {
         }
         user.lastseen = new Date();
         user.save((err) => {
-          debug('ERROR: Could not update field "lastseen" for user who just logged in: %s', err);
+          if (err) {
+            debug('ERROR: Could not update field "lastseen" for user who just logged in: %s', err);
+          }
         });
       });
 
