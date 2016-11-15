@@ -109,7 +109,7 @@ function initApp(callback) {
       uri: config.mongo.location + config.mongo.database,
       collection: 'sessions'
     }, err => {
-      if(err) {
+      if (err) {
         debug('Error starting MongoStore: %s', err);
       }
     });
@@ -164,7 +164,17 @@ function initApp(callback) {
     });
 
     app.use('/api/v1/auth/login', passport.authenticate('oauth2'), (req, res) => {
-      debug('Receiving callback from authentication service. User in session %s is logged in.', req.sessionID);
+      debug('Receiving callback from authentication service. User %s logged in with session %s.', req.user.orcid, req.sessionID);
+      User.findOne({ orcid: req.user.orcid }, (err, user) => {
+        if (err) {
+          debug('ERROR: Could not retrieve user who just logged in from database: %s', err);
+        }
+        user.lastseen = new Date();
+        user.save((err) => {
+          debug('ERROR: Could not update field "lastseen" for user who just logged in: %s', err);
+        });
+      });
+
       res.redirect(config.login.redirect);
     });
 
