@@ -37,7 +37,7 @@ exports.viewSingle = (req, res) => {
       // show level and lastseen for admin users only
       if (req.isAuthenticated() && req.user.level > c.user.level.user.details.view) {
         answer.level = user.level;
-        answer.lastseen = user.lastseen;
+        answer.lastseen = user.lastseenAt;
       }
       
       res.status(200).send(JSON.stringify(answer));

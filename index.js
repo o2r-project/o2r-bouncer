@@ -169,10 +169,10 @@ function initApp(callback) {
         if (err) {
           debug('ERROR: Could not retrieve user who just logged in from database: %s', err);
         }
-        user.lastseen = new Date();
+        user.lastseenAt = new Date();
         user.save((err) => {
           if (err) {
-            debug('ERROR: Could not update field "lastseen" for user who just logged in: %s', err);
+            debug('ERROR: Could not update field "lastseenAt" for user who just logged in: %s', err);
           }
         });
       });
