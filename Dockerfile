@@ -21,7 +21,7 @@ RUN apk add --no-cache \
     ca-certificates \
     wget \
   && git clone --depth 1 -b master https://github.com/o2r-project/o2r-bouncer /bouncer \
-  && wget -O /sbin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 \
+  && wget -O /sbin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
   && chmod +x /sbin/dumb-init \
   && apk del git \
     wget \
