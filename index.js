@@ -167,12 +167,12 @@ function initApp(callback) {
       debug('Receiving callback from authentication service. User %s logged in with session %s.', req.user.orcid, req.sessionID);
       User.findOne({ orcid: req.user.orcid }, (err, user) => {
         if (err) {
-          debug('ERROR: Could not retrieve user who just logged in from database: %s', err);
+          debug('Could not retrieve user who just logged in from database: %s', JSON.stringify(err));
         }
         user.lastseenAt = new Date();
         user.save((err) => {
           if (err) {
-            debug('ERROR: Could not update field "lastseenAt" for user who just logged in: %s', err);
+            debug('Could not update field "lastseenAt" for user who just logged in, error: %s', JSON.stringify(err));
           }
         });
       });
@@ -184,7 +184,7 @@ function initApp(callback) {
       // simple req.logout seems not to suffice for some users: http://stackoverflow.com/questions/13758207/why-is-passportjs-in-node-not-removing-session-on-logout
       req.logout();
       req.session.destroy(function (err) {
-        debug('User session %s is logged out, and session is destroyed, error: %s', req.sessionID, err);
+        debug('User session %s is logged out, and session is destroyed, error: %s', req.sessionID, JSON.stringify(err));
         res.redirect(config.logout.redirect);
       });
     });
