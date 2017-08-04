@@ -153,6 +153,7 @@ before(function (done) {
     var plainuser = {
         '_id': '57b55ee700aee212007ac27f',
         'orcid': orcid_plain,
+        'lastseenAt': new Date(),
         'level': 0,
         'name': 'plain-testuser'
     };
@@ -163,8 +164,9 @@ before(function (done) {
     var uploaderuser = {
         '_id': '58a2e0ea1d68491233b925e8',
         'orcid': orcid_uploader,
+        'lastseenAt': new Date(),
         'level': 100,
-        'name': 'plain-testuser'
+        'name': 'uploader'
     };
     db.users.save(uploaderuser, function (err, doc) {
         if (err) throw err;
@@ -184,7 +186,7 @@ before(function (done) {
         '_id': '598438375a2a970bbd4bf4fe',
         'orcid': orcid_editor,
         'level': 500,
-        'name': 'admin'
+        'name': 'editor'
     };
     db.users.save(editoruser, function (err, doc) {
         if (err) throw err;

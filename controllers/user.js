@@ -34,8 +34,10 @@ exports.viewSingle = (req, res) => {
       // show public information
       answer.name = user.name;
 
-      // show level and lastseen for admin users only
-      if (req.isAuthenticated() && req.user.level > c.user.level.user.details.view) {
+      // show level and lastseen only to admin users and the user herself
+      if (req.isAuthenticated() 
+          && ( req.user.level >= c.user.level.user.edit
+            || user.orcid === id )) {
         answer.level = user.level;
         answer.lastseen = user.lastseenAt;
       }
@@ -83,7 +85,7 @@ exports.patchLevel = (req, res) => {
     res.status(401).send('{"error":"user is not authenticated"}');
     return;
   }
-  if (req.user.level < c.user.level.user.details.edit) {
+  if (req.user.level < c.user.level.user.edit) {
     res.status(401).send('{"error":"user level does not allow edit"}');
     return;
   }
