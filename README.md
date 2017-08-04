@@ -53,6 +53,15 @@ docker-compose down -v
 
 See the [ORCiD Guide](https://members.orcid.org/api/accessing-public-api). As a redirect URI you need to set the path `/api/v1/auth/login`, relative to your base url. We highly recommend using `https`. The client ID & secret then need to be provided as environment variables or directly saved to the `config/config.js` file.
 
+## Slack Bot
+
+Documentation:
+
+- https://api.slack.com/bot-users#
+- start ngrok with `ngrok http 8083` and configure at https://api.slack.com/apps/A6J6CDLQK/interactive-messages?saved=1 and check the web interface at http://127.0.0.1:4040/inspect/http
+
+The bot was manually invited to the `notifications` channel.
+
 ## Devlopment
 
 You must provide the required settings as environment variables, either at start time or via the debug configuration of your IDE.

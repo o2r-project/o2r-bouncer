@@ -23,12 +23,129 @@ const debug = require('debug')('bouncer');
 
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
+const compression = require('compression');
 const app = express();
+app.use(compression());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 const backoff = require('backoff');
 
 const mongoose = require('mongoose');
 const User = require('./lib/model/user');
 const MongoStore = require('connect-mongodb-session')(session);
+
+const slack = require('slack');
+
+var bot2r = slack.rtm.client();
+// start listening to the slack team associated to the token 
+
+debug("bot2r: %s", Object.keys(bot2r));
+
+bot2r.started(function (payload) {
+  console.log('payload from rtm.start', payload);
+});
+
+bot2r.channel_joined(function (payload) {
+  console.log('payload from channel joined', payload);
+});
+
+bot2r.hello(function (payload) {
+  console.log('bot connected to server!', payload);
+
+  //slack.channels.join({
+  //  token: config.slack.bot_token,
+  //  name: '#notifications'
+  //}, (err, data) => {
+  //  console.log(err);
+  //  console.log(data);
+  //});
+
+  slack.chat.postMessage({
+    token: config.slack.bot_token,
+    channel: '#notifications',
+    text: 'I am now online from server with callback URL `' + config.oauth.default.callbackURL + '`.'
+  }, (err, data) => {
+    console.log(err);
+    console.log(data);
+  });
+
+
+  let user_id = '0000-0000-0000-0000';
+  let user_link = 'https://orcid.org/' + user_id;
+
+  slack.chat.postMessage({
+    token: config.slack.bot_token,
+    channel: '#notifications',
+    text: 'A new user ' + user_id + ' just registered',
+    attachments: [
+      {
+        "text": "What kind of user level should " + user_link + " get?",
+        "fallback": "0",
+        "callback_id": "user_level",
+        "color": "#004286",
+        "attachment_type": "default",
+        "actions": [
+          {
+            "name": "user_level",
+            "text": "Stay new user",
+            "type": "button",
+            "value": "0"
+          },
+          {
+            "name": "user_level",
+            "text": "Known user",
+            "type": "button",
+            "value": "100"
+          },
+          {
+            "name": "user_level",
+            "text": "Editor",
+            "type": "button",
+            "value": "500",
+            "style": "danger",
+            "confirm": {
+              "title": "Are you sure?",
+              "text": "Wouldn't you want to reconsider?",
+              "ok_text": "Yes",
+              "dismiss_text": "No"
+            }
+          },
+          {
+            "name": "user_level",
+            "text": "Admin",
+            "type": "button",
+            "value": "1000",
+            "style": "danger",
+            "confirm": {
+              "title": "Are you sure?",
+              "text": "Wouldn't you want to reconsider?",
+              "ok_text": "Yes",
+              "dismiss_text": "No"
+            }
+          }
+        ]
+      }
+    ]
+  }, (err, data) => {
+    console.log(err);
+    console.log(data);
+  });
+
+});
+
+bot2r.message(function (payload) {
+  console.log('incoming message!', payload);
+});
+
+bot2r.goodbye(function (payload) {
+  console.log('server wants to close the connection soon...', payload);
+});
+
+
+bot2r.listen({ token: config.slack.bot_token });
+
 
 // use ES6 promises for mongoose
 mongoose.Promise = global.Promise;
@@ -77,11 +194,14 @@ const oauth2 = new OAuth2Strat(
         profile.name = user.name;
         return cb(null, profile);
       } else {
+        // new user is created here
         let newUser = new User({ orcid: params.orcid, name: params.name });
         newUser.save(err => {
           if (err) {
             return cb(err);
           } else {
+
+
             profile.orcid = params.orcid;
             profile.name = params.name;
             return cb(null, profile);
@@ -210,6 +330,16 @@ function initApp(callback) {
     app.get('/api/v1/user', controllers.user.view);
     app.get('/api/v1/user/:id', controllers.user.viewSingle);
     app.patch('/api/v1/user/:id', controllers.user.patchLevel);
+
+    app.post('/api/v1/slack/action', (req, res) => {
+      let payload = JSON.parse(req.body.payload);
+      console.log(payload);
+    });
+
+    app.post('/api/v1/slack/ptions-load', (req, res) => {
+      console.log(req);
+
+    });
 
     app.listen(config.net.port, () => {
       debug('bouncer %s with API version %s waiting for requests on port %s',

@@ -64,4 +64,10 @@ c.user.level.view_status = 1000;
 c.user.level.user = {};
 c.user.level.user.edit = 500;
 
+// Slack
+c.slack = {};
+c.slack.token = process.env.SLACK_TOKEN;
+c.slack.bot_token = process.env.SLACK_BOT_TOKEN;
+
+
 module.exports = c;
