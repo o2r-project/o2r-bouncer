@@ -22,10 +22,8 @@ c.oauth = {};
 var env = process.env;
 
 // Information about bouncer
-c.version.major  = 0;
-c.version.minor  = 4;
-c.version.bug    = 1;
-c.version.api    = 1;
+c.api_version = 1;
+c.version = require('../package.json').version;
 
 // network & database
 c.net.port         = env.BOUNCER_PORT || 8083;
@@ -62,10 +60,8 @@ c.logout.redirect = '/';
 // user levels
 c.user = {};
 c.user.level = {};
-c.user.level.view_status = 500;
+c.user.level.view_status = 1000;
 c.user.level.user = {};
-c.user.level.user.details = {};
-c.user.level.user.details.view = 100;
-c.user.level.user.details.edit = 500;
+c.user.level.user.edit = 500;
 
 module.exports = c;

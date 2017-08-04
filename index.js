@@ -206,13 +206,10 @@ function initApp(callback) {
     app.patch('/api/v1/user/:id', controllers.user.patchLevel);
 
     app.listen(config.net.port, () => {
-      debug('bouncer v%s.%s.%s API version %s listening on port %s',
-        config.version.major,
-        config.version.minor,
-        config.version.bug,
-        config.version.api,
-        config.net.port
-      );
+      debug('bouncer %s with API version %s waiting for requests on port %s',
+        config.version,
+        config.api_version,
+        config.net.port);
     });
 
   } catch (err) {

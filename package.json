@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha",
+    "test": "DEBUG=*,-modem,-mocha:* mocha",
     "debug": "DEBUG=muncher,executor node index.js"
   },
   "author": "o2r-project",
@@ -25,5 +25,12 @@
     "mongoose-timestamp": "^0.6.0",
     "passport": "^0.3.2",
     "passport-oauth2": "^1.4.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.0",
+    "mocha": "^3.5.0",
+    "mongojs": "^2.4.0",
+    "sleep": "^5.1.1",
+    "request": "^2.81.0"
   }
 }
