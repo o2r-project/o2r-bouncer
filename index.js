@@ -30,8 +30,14 @@ const mongoose = require('mongoose');
 const User = require('./lib/model/user');
 const MongoStore = require('connect-mongodb-session')(session);
 
+// use ES6 promises for mongoose
+mongoose.Promise = global.Promise;
+
 const dbURI = config.mongo.location + config.mongo.database;
-mongoose.connect(dbURI);
+mongoose.connect(dbURI, {
+  useMongoClient: true,
+  promiseLibrary: global.Promise // use ES6 promises for underlying MongoDB DRIVE
+});
 mongoose.connection.on('error', (err) => {
   debug('Could not connect to MongoDB @ %s: %s', dbURI, err);
 });
@@ -232,7 +238,10 @@ dbBackoff.on('backoff', function (number, delay) {
 });
 dbBackoff.on('ready', function (number, delay) {
   debug('Connect to MongoDB (#%s) ...', number);
-  mongoose.connect(dbURI, (err) => {
+  mongoose.connect(dbURI, {
+    useMongoClient: true,
+    promiseLibrary: global.Promise
+  }, (err) => {
     if (err) {
       debug('Error during connect: %s', err);
       mongoose.disconnect(() => {
