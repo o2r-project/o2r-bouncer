@@ -12,20 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM alpine:3.4
-MAINTAINER o2r-project, https://o2r.info
+FROM alpine:3.6
+
+# Add Alpine mirrors, replacing default repositories with edge ones, based on https://github.com/jfloff/alpine-python/blob/master/3.4/Dockerfile
+RUN echo \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
 
 RUN apk add --no-cache \
     nodejs \
-    git \
-    ca-certificates \
-    wget \
-  #&& git clone --depth 1 -b master https://github.com/o2r-project/o2r-bouncer /bouncer \
-  && wget -O /sbin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
-  && chmod +x /sbin/dumb-init \
-  && apk del git \
-    wget \
-    ca-certificates \
+    nodejs-npm \
+    dumb-init \
   && rm -rf /var/cache
 
 WORKDIR /bouncer

@@ -12,28 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM alpine:3.4
-MAINTAINER o2r-project, https://o2r.info
+FROM alpine:3.6
 
+# Add Alpine mirrors, replacing default repositories with edge ones, based on https://github.com/jfloff/alpine-python/blob/master/3.4/Dockerfile
+RUN echo \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+
+# Add app and dependencies
+WORKDIR /bouncer
 RUN apk add --no-cache \
     nodejs \
+    nodejs-npm \
     git \
     ca-certificates \
     wget \
+    dumb-init \
   && git clone --depth 1 -b master https://github.com/o2r-project/o2r-bouncer /bouncer \
-  && wget -O /sbin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
-  && chmod +x /sbin/dumb-init \
   && apk del git \
     wget \
     ca-certificates \
   && rm -rf /var/cache
-
-WORKDIR /bouncer
 
 # dirty hack because global-tunnel is unmaintained and needs newer tunnel version
 RUN npm install --production
 RUN sed -i 's/0\.0\.2/0\.0\.4/' node_modules/global-tunnel/package.json \
   && npm install --production
 
-ENTRYPOINT ["/sbin/dumb-init", "--"]
+# Metadata params provided with docker build command
+ARG VERSION=dev
+ARG VCS_URL
+ARG VCS_REF
+ARG BUILD_DATE
+
+# Metadata http://label-schema.org/rc1/
+LABEL maintainer="o2r-project <https://o2r.info>" \
+  org.label-schema.vendor="o2r project" \
+  org.label-schema.url="http://o2r.info" \
+  org.label-schema.name="o2r bouncer" \
+  org.label-schema.description="user authentication for o2r API" \    
+  org.label-schema.version=$VERSION \
+  org.label-schema.vcs-url=$VCS_URL \
+  org.label-schema.vcs-ref=$VCS_REF \
+  org.label-schema.build-date=$BUILD_DATE \
+  org.label-schema.docker.schema-version="rc1"
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["npm", "start" ]
