@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Jan Koppe.
+ * (C) Copyright 2017 o2r project.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,14 +60,19 @@ c.logout.redirect = '/';
 // user levels
 c.user = {};
 c.user.level = {};
-c.user.level.view_status = 1000;
-c.user.level.user = {};
-c.user.level.user.edit = 500;
+c.user.level.admin = 1000;
+c.user.level.editor = 500;
+c.user.level.known = 100;
+c.user.level.userEdit = c.user.level.editor;
+c.user.level.userEdit = c.user.level.editor;
 
 // Slack
 c.slack = {};
-c.slack.token = process.env.SLACK_TOKEN;
+c.slack.enable = true;
 c.slack.bot_token = process.env.SLACK_BOT_TOKEN;
+c.slack.channel = {};
+c.slack.channel.status = process.env.SLACK_CHANNEL_STATUS || '#monitoring';
+c.slack.channel.userevents = process.env.SLACK_CHANNEL_USER ||'#monitoring';
 
 
 module.exports = c;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Jan Koppe.
+ * (C) Copyright 2017 o2r project.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,116 +36,7 @@ const mongoose = require('mongoose');
 const User = require('./lib/model/user');
 const MongoStore = require('connect-mongodb-session')(session);
 
-const slack = require('slack');
-
-var bot2r = slack.rtm.client();
-// start listening to the slack team associated to the token 
-
-debug("bot2r: %s", Object.keys(bot2r));
-
-bot2r.started(function (payload) {
-  console.log('payload from rtm.start', payload);
-});
-
-bot2r.channel_joined(function (payload) {
-  console.log('payload from channel joined', payload);
-});
-
-bot2r.hello(function (payload) {
-  console.log('bot connected to server!', payload);
-
-  //slack.channels.join({
-  //  token: config.slack.bot_token,
-  //  name: '#notifications'
-  //}, (err, data) => {
-  //  console.log(err);
-  //  console.log(data);
-  //});
-
-  slack.chat.postMessage({
-    token: config.slack.bot_token,
-    channel: '#notifications',
-    text: 'I am now online from server with callback URL `' + config.oauth.default.callbackURL + '`.'
-  }, (err, data) => {
-    console.log(err);
-    console.log(data);
-  });
-
-
-  let user_id = '0000-0000-0000-0000';
-  let user_link = 'https://orcid.org/' + user_id;
-
-  slack.chat.postMessage({
-    token: config.slack.bot_token,
-    channel: '#notifications',
-    text: 'A new user ' + user_id + ' just registered',
-    attachments: [
-      {
-        "text": "What kind of user level should " + user_link + " get?",
-        "fallback": "0",
-        "callback_id": "user_level",
-        "color": "#004286",
-        "attachment_type": "default",
-        "actions": [
-          {
-            "name": "user_level",
-            "text": "Stay new user",
-            "type": "button",
-            "value": "0"
-          },
-          {
-            "name": "user_level",
-            "text": "Known user",
-            "type": "button",
-            "value": "100"
-          },
-          {
-            "name": "user_level",
-            "text": "Editor",
-            "type": "button",
-            "value": "500",
-            "style": "danger",
-            "confirm": {
-              "title": "Are you sure?",
-              "text": "Wouldn't you want to reconsider?",
-              "ok_text": "Yes",
-              "dismiss_text": "No"
-            }
-          },
-          {
-            "name": "user_level",
-            "text": "Admin",
-            "type": "button",
-            "value": "1000",
-            "style": "danger",
-            "confirm": {
-              "title": "Are you sure?",
-              "text": "Wouldn't you want to reconsider?",
-              "ok_text": "Yes",
-              "dismiss_text": "No"
-            }
-          }
-        ]
-      }
-    ]
-  }, (err, data) => {
-    console.log(err);
-    console.log(data);
-  });
-
-});
-
-bot2r.message(function (payload) {
-  console.log('incoming message!', payload);
-});
-
-bot2r.goodbye(function (payload) {
-  console.log('server wants to close the connection soon...', payload);
-});
-
-
-bot2r.listen({ token: config.slack.bot_token });
-
+const slackbot = require('./lib/slack');
 
 // use ES6 promises for mongoose
 mongoose.Promise = global.Promise;
@@ -170,8 +61,9 @@ const passport = require('passport');
 const OAuth2Strat = require('passport-oauth2').Strategy;
 
 // load controllers
-var controllers = {};
-controllers.user = require('./controllers/user');
+userView = require('./lib/user').view;
+userViewSingle = require('./lib/user').viewSingle;
+userPatchLevel = require('./lib/user').patchLevel;
 
 // make sure required settings without defaults are availabe
 if (typeof config.oauth.default.clientID == 'undefined' |
@@ -200,7 +92,9 @@ const oauth2 = new OAuth2Strat(
           if (err) {
             return cb(err);
           } else {
-
+            if (config.slack.enable) {
+              slackbot.newOrcidUser(params.orcid);
+            }
 
             profile.orcid = params.orcid;
             profile.name = params.name;
@@ -327,19 +221,19 @@ function initApp(callback) {
       }
     });
 
-    app.get('/api/v1/user', controllers.user.view);
-    app.get('/api/v1/user/:id', controllers.user.viewSingle);
-    app.patch('/api/v1/user/:id', controllers.user.patchLevel);
+    app.get('/api/v1/user', userView);
+    app.get('/api/v1/user/:id', userViewSingle);
+    app.patch('/api/v1/user/:id', userPatchLevel);
 
-    app.post('/api/v1/slack/action', (req, res) => {
-      let payload = JSON.parse(req.body.payload);
-      console.log(payload);
-    });
-
-    app.post('/api/v1/slack/ptions-load', (req, res) => {
-      console.log(req);
-
-    });
+    if (config.slack.enable && config.slack.bot_token !== 'undefined') {
+      debug('Slack bot enabled - nice!');
+      app.post('/api/v1/slack/action', slackbot.incomingAction);
+      app.post('/api/v1/slack/options-load', slackbot.optionsLoad);
+      slackbot.start();
+    } else {
+      debug('Slack bot disabled? %s. The token is "%s". Disabling it now.', config.slack.enable, config.slack.bot_token);
+      config.slack.enable = false;
+    }
 
     app.listen(config.net.port, () => {
       debug('bouncer %s with API version %s waiting for requests on port %s',

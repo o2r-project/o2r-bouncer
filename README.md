@@ -48,19 +48,34 @@ docker-compose down -v
   The client secret for your instance.
 * `http_proxy`
   HTTP Proxy used for the oauth process. This will be needed if your server is behind a Proxy/firewall. _Important:_ See the above details on updating the `global-tunnel` dependency before you use this.
+* `SLACK_BOT_TOKEN`
+  Authentication token for a bot app on Slack. See section [Slack bot](#slack-bot).
+* `SLACK_CHANNEL_STATUS`
+  Channel to post status messages to, defaults to `#monitoring`.
+* `SLACK_CHANNEL_USER`
+  Channel to post messages on user events, defaults to `#monitoring`.
 
 ### Generating the client ID & secret
 
 See the [ORCiD Guide](https://members.orcid.org/api/accessing-public-api). As a redirect URI you need to set the path `/api/v1/auth/login`, relative to your base url. We highly recommend using `https`. The client ID & secret then need to be provided as environment variables or directly saved to the `config/config.js` file.
 
-## Slack Bot
+## Slack bot
 
-Documentation:
+Documentation of Slack API: https://api.slack.com/bot-users
 
-- https://api.slack.com/bot-users#
-- start ngrok with `ngrok http 8083` and configure at https://api.slack.com/apps/A6J6CDLQK/interactive-messages?saved=1 and check the web interface at http://127.0.0.1:4040/inspect/http
+The bot needs the permissions to join channels and post to them.
+Add the following scopes to the app in the section "OAuth & Permissions" in the bot's apps page.
 
-The bot was manually invited to the `notifications` channel.
+- `channels:write`
+- `chat:write:bot`
+- `incoming-webhook`
+- `bot`
+
+While adding the app to your Slack organisation, make sure to allow the bot to post the the desired channel.
+
+### Local bot development
+
+Start ngrok with `ngrok http 8083` and enter the public endpoint pointing to your local server at https://api.slack.com/apps/A6J6CDLQK/interactive-messages. ngrok also has a useful web interface at http://127.0.0.1:4040/inspect/http on all incoming requests.
 
 ## Devlopment
 
