@@ -237,7 +237,7 @@ function initApp(callback) {
       }, (done) => {
         debug('Slack bot enabled and configured - nice! Message response was \n%s', JSON.stringify(done));
         
-        app.get('/api/v1/user/slack', (req, res) => {
+        app.get('/api/v1/auth/slack', (req, res) => {
           if (req.isAuthenticated()) {
             let answer = {
               enabled: config.slack.enable
@@ -248,8 +248,8 @@ function initApp(callback) {
           }
         });
 
-        app.post('/api/v1/user/slack/action', slackbot.incomingAction);
-        app.post('/api/v1/user/slack/options-load', slackbot.optionsLoad);
+        app.post('/api/v1/auth/slack/action', slackbot.incomingAction);
+        app.post('/api/v1/auth/slack/options-load', slackbot.optionsLoad);
       });
     }
 

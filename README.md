@@ -72,11 +72,16 @@ Add the following scopes to the app in the section "OAuth & Permissions" in the 
 
 While adding the app to your Slack organisation, make sure to allow the bot to post the the desired channel.
 
+In the o2r bot app's configuration page for Interactive Messages on Slack, enter the following endpoints:
+
+- Request URL: https://o2r.uni-muenster.de/api/v1/auth/slack/action
+- Options Load URL: (currently not used!) https://o2r.uni-muenster.de/api/v1/auth/slack/options-load
+
 ### Local bot development
 
 Start ngrok with `ngrok http 8083` and enter the public endpoint pointing to your local server at https://api.slack.com/apps/A6J6CDLQK/interactive-messages. ngrok also has a useful web interface at http://127.0.0.1:4040/inspect/http on all incoming requests.
 
-## Devlopment
+## Development
 
 You must provide the required settings as environment variables, either at start time or via the debug configuration of your IDE.
 
