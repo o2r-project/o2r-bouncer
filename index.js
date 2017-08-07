@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Jan Koppe.
+ * (C) Copyright 2017 o2r project.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,29 @@ const debug = require('debug')('bouncer');
 
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
+const compression = require('compression');
 const app = express();
+app.use(compression());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 const backoff = require('backoff');
 
 const mongoose = require('mongoose');
 const User = require('./lib/model/user');
 const MongoStore = require('connect-mongodb-session')(session);
 
+const slackbot = require('./lib/slack');
+
+// use ES6 promises for mongoose
+mongoose.Promise = global.Promise;
+
 const dbURI = config.mongo.location + config.mongo.database;
-mongoose.connect(dbURI);
+mongoose.connect(dbURI, {
+  useMongoClient: true,
+  promiseLibrary: global.Promise // use ES6 promises for underlying MongoDB DRIVE
+});
 mongoose.connection.on('error', (err) => {
   debug('Could not connect to MongoDB @ %s: %s', dbURI, err);
 });
@@ -47,8 +61,9 @@ const passport = require('passport');
 const OAuth2Strat = require('passport-oauth2').Strategy;
 
 // load controllers
-var controllers = {};
-controllers.user = require('./controllers/user');
+userView = require('./lib/user').view;
+userViewSingle = require('./lib/user').viewSingle;
+userPatchLevel = require('./lib/user').patchLevel;
 
 // make sure required settings without defaults are availabe
 if (typeof config.oauth.default.clientID == 'undefined' |
@@ -71,11 +86,16 @@ const oauth2 = new OAuth2Strat(
         profile.name = user.name;
         return cb(null, profile);
       } else {
+        // new user is created here
         let newUser = new User({ orcid: params.orcid, name: params.name });
         newUser.save(err => {
           if (err) {
             return cb(err);
           } else {
+            if (config.slack.enable) {
+              slackbot.newOrcidUser(params.orcid);
+            }
+
             profile.orcid = params.orcid;
             profile.name = params.name;
             return cb(null, profile);
@@ -201,9 +221,20 @@ function initApp(callback) {
       }
     });
 
-    app.get('/api/v1/user', controllers.user.view);
-    app.get('/api/v1/user/:id', controllers.user.viewSingle);
-    app.patch('/api/v1/user/:id', controllers.user.patchLevel);
+    app.get('/api/v1/user', userView);
+    app.get('/api/v1/user/:id', userViewSingle);
+    app.patch('/api/v1/user/:id', userPatchLevel);
+
+    if (config.slack.enable) {
+      slackbot.start((err) => {
+        debug('Error startign slackbot (disabling it now): %s', JSON.stringify(err));
+        config.slack.enable = false;
+      }, (done) => {
+        debug('Slack bot enabled and configured - nice! %s', JSON.stringify(done));
+        app.post('/api/v1/slack/action', slackbot.incomingAction);
+        app.post('/api/v1/slack/options-load', slackbot.optionsLoad);
+      });
+    }
 
     app.listen(config.net.port, () => {
       debug('bouncer %s with API version %s waiting for requests on port %s',
@@ -232,7 +263,10 @@ dbBackoff.on('backoff', function (number, delay) {
 });
 dbBackoff.on('ready', function (number, delay) {
   debug('Connect to MongoDB (#%s) ...', number);
-  mongoose.connect(dbURI, (err) => {
+  mongoose.connect(dbURI, {
+    useMongoClient: true,
+    promiseLibrary: global.Promise
+  }, (err) => {
     if (err) {
       debug('Error during connect: %s', err);
       mongoose.disconnect(() => {

@@ -28,7 +28,6 @@ RUN apk add --no-cache \
 
 WORKDIR /bouncer
 COPY config config
-COPY controllers controllers
 COPY lib lib
 COPY index.js index.js
 COPY package.json package.json
