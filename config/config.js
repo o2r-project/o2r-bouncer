@@ -70,9 +70,10 @@ c.user.level.userEdit = c.user.level.editor;
 c.slack = {};
 c.slack.enable = true;
 c.slack.bot_token = process.env.SLACK_BOT_TOKEN;
+c.slack.verification_token = process.env.SLACK_VERIFICATION_TOKEN;
 c.slack.channel = {};
 c.slack.channel.status = process.env.SLACK_CHANNEL_STATUS || '#monitoring';
 c.slack.channel.userevents = process.env.SLACK_CHANNEL_USER ||'#monitoring';
-
+c.slack.allowedUsers = new RegExp(process.env.SLACK_USERNAMES_WHITELIST, 'i') || new RegExp('.*', 'i');
 
 module.exports = c;

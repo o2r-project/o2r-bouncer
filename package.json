@@ -23,10 +23,12 @@
     "express": "^4.15.3",
     "express-session": "^1.15.5",
     "global-tunnel": "^1.2.0",
+    "identifiers-orcid": "^0.1.1",
     "mongoose": "^4.11.5",
     "mongoose-timestamp": "^0.6.0",
     "passport": "^0.3.2",
     "passport-oauth2": "^1.4.0",
+    "request": "^2.81.0",
     "slack": "^8.3.1"
   },
   "devDependencies": {

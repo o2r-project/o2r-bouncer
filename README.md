@@ -50,10 +50,14 @@ docker-compose down -v
   HTTP Proxy used for the oauth process. This will be needed if your server is behind a Proxy/firewall. _Important:_ See the above details on updating the `global-tunnel` dependency before you use this.
 * `SLACK_BOT_TOKEN`
   Authentication token for a bot app on Slack. See section [Slack bot](#slack-bot).
+* `SLACK_VERIFICATION_TOKEN`
+  Token provided by Slack for interative messages and events, to be used to verify that requests are actually coming from Slack.
 * `SLACK_CHANNEL_STATUS`
   Channel to post status messages to, defaults to `#monitoring`.
 * `SLACK_CHANNEL_USER`
   Channel to post messages on user events, defaults to `#monitoring`.
+* `SLACK_USERNAMES_WHITELIST`
+  A regex to check Slack usernames, which are allowed to react to interactive messages. Defaults to `.*` and the created regex is always case _in_sensitive. To allow specific users only, use e.g. `\\b(claerbout|peng|stodden)\\b` (case insensitive match of full words `claerbout`, `peng`, `stodden`).
 
 ### Generating the client ID & secret
 
@@ -61,7 +65,7 @@ See the [ORCiD Guide](https://members.orcid.org/api/accessing-public-api). As a 
 
 ## Slack bot
 
-Documentation of Slack API: https://api.slack.com/bot-users
+Documentation of Slack API: https://api.slack.com/bot-users, especially [interactive messages](https://api.slack.com/interactive-messages).
 
 The bot needs the permissions to join channels and post to them.
 Add the following scopes to the app in the section "OAuth & Permissions" in the bot's apps page.

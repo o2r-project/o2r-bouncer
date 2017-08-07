@@ -225,14 +225,15 @@ function initApp(callback) {
     app.get('/api/v1/user/:id', userViewSingle);
     app.patch('/api/v1/user/:id', userPatchLevel);
 
-    if (config.slack.enable && config.slack.bot_token !== 'undefined') {
-      debug('Slack bot enabled - nice!');
-      app.post('/api/v1/slack/action', slackbot.incomingAction);
-      app.post('/api/v1/slack/options-load', slackbot.optionsLoad);
-      slackbot.start();
-    } else {
-      debug('Slack bot disabled? %s. The token is "%s". Disabling it now.', config.slack.enable, config.slack.bot_token);
-      config.slack.enable = false;
+    if (config.slack.enable) {
+      slackbot.start((err) => {
+        debug('Error startign slackbot (disabling it now): %s', JSON.stringify(err));
+        config.slack.enable = false;
+      }, (done) => {
+        debug('Slack bot enabled and configured - nice! %s', JSON.stringify(done));
+        app.post('/api/v1/slack/action', slackbot.incomingAction);
+        app.post('/api/v1/slack/options-load', slackbot.optionsLoad);
+      });
     }
 
     app.listen(config.net.port, () => {
