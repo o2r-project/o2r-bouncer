@@ -21,8 +21,8 @@ const debug = require('debug')('bouncer');
 // override global http proxy
 const globalTunnel = require('global-tunnel-ng');
 globalTunnel.initialize();
-debug('Using global-tunnel-ng proxyURL %s. Is proxying? %s. env vars: http_proxy=%s https_proxy=%s',
-  globalTunnel.proxyConfig, globalTunnel.isProxying,
+debug('Using global-tunnel-ng config %s.\nIs proxying? %s. env vars: http_proxy=%s https_proxy=%s',
+  JSON.stringify(globalTunnel.proxyConfig), globalTunnel.isProxying,
   process.env.http_proxy, process.env.https_proxy
 );
 
@@ -232,12 +232,12 @@ function initApp(callback) {
 
     if (config.slack.enable) {
       slackbot.start((err) => {
-        debug('Error startign slackbot (disabling it now): %s', JSON.stringify(err));
+        debug('Error starting slackbot (disabling it now): %s', JSON.stringify(err));
         config.slack.enable = false;
       }, (done) => {
-        debug('Slack bot enabled and configured - nice! %s', JSON.stringify(done));
+        debug('Slack bot enabled and configured - nice! Message response was \n%s', JSON.stringify(done));
         
-        app.get('/api/v1/slack', (req, res) => {
+        app.get('/api/v1/user/slack', (req, res) => {
           if (req.isAuthenticated()) {
             let answer = {
               enabled: config.slack.enable
@@ -248,8 +248,8 @@ function initApp(callback) {
           }
         });
 
-        app.post('/api/v1/slack/action', slackbot.incomingAction);
-        app.post('/api/v1/slack/options-load', slackbot.optionsLoad);
+        app.post('/api/v1/user/slack/action', slackbot.incomingAction);
+        app.post('/api/v1/user/slack/options-load', slackbot.optionsLoad);
       });
     }
 

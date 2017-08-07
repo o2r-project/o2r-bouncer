@@ -83,7 +83,7 @@ You must provide the required settings as environment variables, either at start
 To start bouncer with the required environment replace the respective settings with the actual values (check your ORCiD page) and execute the following command.
 
 ```bash
-DEBUG=* OAUTH_CLIENT_ID=clientid OAUTH_CLIENT_SECRET=secret npm start
+DEBUG=* OAUTH_CLIENT_ID=clientid OAUTH_CLIENT_SECRET=secret SLACK_VERIFICATION_TOKEN=token SLACK_BOT_TOKEN=xoxb-token npm start
 ```
 
 You can then start the authentication process by opening http://localhost:8083/api/v1/auth/login and see who you are afterwards at http://localhost:8083/api/v1/auth/whoami.
