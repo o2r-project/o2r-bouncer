@@ -64,7 +64,6 @@ c.user.level.admin = 1000;
 c.user.level.editor = 500;
 c.user.level.known = 100;
 c.user.level.userEdit = c.user.level.editor;
-c.user.level.userEdit = c.user.level.editor;
 
 // Slack
 c.slack = {};
