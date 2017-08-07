@@ -35,10 +35,7 @@ RUN apk add --no-cache \
     ca-certificates \
   && rm -rf /var/cache
 
-# dirty hack because global-tunnel is unmaintained and needs newer tunnel version
 RUN npm install --production
-RUN sed -i 's/0\.0\.2/0\.0\.4/' node_modules/global-tunnel/package.json \
-  && npm install --production
 
 # Metadata params provided with docker build command
 ARG VERSION=dev

@@ -6,11 +6,6 @@ Requirements:
 
 - nodejs `>= 6.2`
 - npm
-- modified global-tunnel with tunnel 0.0.4
-
-## Global-tunnel
-
-o2r bouncer uses the `global-tunnel` module, which is unfortunately unmaintained. You will need to `npm install`, then change the dependency version of `tunnel` in the `node_modules/global-tunnel/package.json` file to `0.0.4` and do a `npm install` again. Without this modification, o2r bouncer will fail when used with a `http_proxy` environment variable.
 
 ## Dockerfile
 
@@ -46,8 +41,8 @@ docker-compose down -v
   The client ID for your instance.
 * `OAUTH_CLIENT_SECRET` __Required__
   The client secret for your instance.
-* `http_proxy`
-  HTTP Proxy used for the oauth process. This will be needed if your server is behind a Proxy/firewall. _Important:_ See the above details on updating the `global-tunnel` dependency before you use this.
+* `http_proxy` __Required__
+  HTTP(S) Proxy used for the OAuth process. This will be needed if your server is behind a proxy/firewall.
 * `SLACK_BOT_TOKEN`
   Authentication token for a bot app on Slack. See section [Slack bot](#slack-bot).
 * `SLACK_VERIFICATION_TOKEN`

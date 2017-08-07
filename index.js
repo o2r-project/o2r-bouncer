@@ -15,11 +15,16 @@
  *
  */
 
-// override global http proxy
-require('global-tunnel').initialize();
-
 const config = require('./config/config');
 const debug = require('debug')('bouncer');
+
+// override global http proxy
+const globalTunnel = require('global-tunnel-ng');
+globalTunnel.initialize();
+debug('Using global-tunnel-ng proxyURL %s. Is proxying? %s. env vars: http_proxy=%s https_proxy=%s',
+  globalTunnel.proxyConfig, globalTunnel.isProxying,
+  process.env.http_proxy, process.env.https_proxy
+);
 
 const express = require('express');
 const session = require('express-session');
@@ -231,6 +236,18 @@ function initApp(callback) {
         config.slack.enable = false;
       }, (done) => {
         debug('Slack bot enabled and configured - nice! %s', JSON.stringify(done));
+        
+        app.get('/api/v1/slack', (req, res) => {
+          if (req.isAuthenticated()) {
+            let answer = {
+              enabled: config.slack.enable
+            };
+            res.send(JSON.stringify(answer));
+          } else {
+            res.status(401).send(JSON.stringify({ 'error': 'not authenticated' }));
+          }
+        });
+
         app.post('/api/v1/slack/action', slackbot.incomingAction);
         app.post('/api/v1/slack/options-load', slackbot.optionsLoad);
       });

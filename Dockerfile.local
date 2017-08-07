@@ -32,10 +32,7 @@ COPY lib lib
 COPY index.js index.js
 COPY package.json package.json
 
-# dirty hack because global-tunnel is unmaintained and needs newer tunnel version
 RUN npm install --production
-RUN sed -i 's/0\.0\.2/0\.0\.4/' node_modules/global-tunnel/package.json \
-  && npm install --production
 
 ENTRYPOINT ["/sbin/dumb-init", "--"]
 CMD ["npm", "start" ]
