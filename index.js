@@ -178,11 +178,11 @@ function initApp(callback) {
     app.use('/api/', (req, res, next) => {
       res.setHeader('Content-Type', 'application/json');
 
-      var orcid = '';
+      let orcid = '';
       if (req.user && req.user.orcid) {
         orcid = ' | orcid: ' + req.user.orcid;
       }
-      debug('REQUEST %s %s authenticated user: %s | session: %s',
+      debug('REQUEST %s %s authenticated user: %s | session: %s %s',
         req.method, req.path, req.isAuthenticated(), req.session.id, orcid);
 
       next();

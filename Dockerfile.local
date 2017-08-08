@@ -34,7 +34,7 @@ COPY package.json package.json
 
 RUN npm install --production
 
-ENTRYPOINT ["/sbin/dumb-init", "--"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["npm", "start" ]
 
 # docker build --tag bouncer -f Dockerfile.local --no-cache .
