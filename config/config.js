@@ -29,9 +29,9 @@ c.version = require('../package.json').version;
 c.net.port         = env.BOUNCER_PORT || 8083;
 c.mongo.location   = env.BOUNCER_MONGODB || 'mongodb://localhost/';
 c.mongo.database   = env.BOUNCER_MONGODB_DATABASE || 'muncher';
-c.mongo.inital_connection_attempts = 30;
-c.mongo.inital_connection_max_delay = 3000;
-c.mongo.inital_connection_initial_delay = 1000;
+c.mongo.initial_connection_attempts = 30;
+c.mongo.initial_connection_max_delay = 3000;
+c.mongo.initial_connection_initial_delay = 1000;
 
 // fix mongo location if trailing slash was omitted
 if (c.mongo.location[c.mongo.location.length-1] !== '/') {

@@ -270,11 +270,11 @@ function initApp(callback) {
 // auto_reconnect is on by default and only for RE(!)connects, BUT not for the initial attempt: http://bites.goodeggs.com/posts/reconnecting-to-mongodb-when-mongoose-connect-fails-at-startup/
 var dbBackoff = backoff.fibonacci({
   randomisationFactor: 0,
-  initialDelay: config.mongo.inital_connection_initial_delay,
-  maxDelay: config.mongo.inital_connection_max_delay
+  initialDelay: config.mongo.initial_connection_initial_delay,
+  maxDelay: config.mongo.initial_connection_max_delay
 });
 
-dbBackoff.failAfter(config.mongo.inital_connection_attempts);
+dbBackoff.failAfter(config.mongo.initial_connection_attempts);
 dbBackoff.on('backoff', function (number, delay) {
   debug('Trying to connect to MongoDB in %sms', delay);
 });
