@@ -84,6 +84,31 @@ describe('Editing user levels', () => {
         });
     });
 
+    describe('PATCH non-existing user id by editor', () => {
+        let j = request.jar();
+        let ck = request.cookie('connect.sid=' + cookie_editor);
+        j.setCookie(ck, global.test_host);
+
+        it('should respond with HTTP 400 if user id does not exist', (done) => {
+            request({ url: global.test_host + '/api/v1/user/1234-1234' + '?level=42', jar: j, method: "PATCH" }, (err, res, body) => {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 400);
+                done();
+            });
+        });
+
+        it('should respond with valid JSON containing error message if user id does not exist', (done) => {
+            request({ url: global.test_host + '/api/v1/user/1234-1234' + '?level=42', jar: j, method: "PATCH" }, (err, res, body) => {
+                assert.ifError(err);
+                let response = JSON.parse(body);
+                assert.isObject(response);
+                assert.property(response, 'error');
+                done();
+            });
+        });
+    });
+
+
     describe('PATCH ' + user_url + ' for plain user by admin', () => {
         let j = request.jar();
         let ck = request.cookie('connect.sid=' + cookie_admin);

@@ -163,5 +163,23 @@ describe('Viewing user levels and other details', () => {
             });
         });
     });
+
+    describe('GET for *not existing* user', () => {
+        it('should respond with a valid JSON document', (done) => {
+            request(global.test_host + '/api/v1/user/1234', (err, res, body) => {
+                assert.ifError(err);
+                assert.isObject(JSON.parse(body));
+                done();
+            });
+        });
+        it('should respond with document containing error message', (done) => {
+            request(global.test_host + '/api/v1/user/1234', (err, res, body) => {
+                assert.ifError(err);
+                let response = JSON.parse(body);
+                assert.property(response, 'error');
+                done();
+            });
+        });
+    });
 });
 
