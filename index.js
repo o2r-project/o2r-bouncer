@@ -232,11 +232,13 @@ function initApp(callback) {
 
     if (config.slack.enable) {
       slackbot.start((err) => {
-        debug('Error starting slackbot (disabling it now): %s', err);
-        config.slack.enable = false;
+        if (err) {
+          debug('Error starting slackbot (disabling it now): %s', err);
+          config.slack.enable = false;
+        }
       }, (done) => {
         debug('Slack bot enabled and configured - nice! Message response was \n%s', JSON.stringify(done));
-        
+
         app.get('/api/v1/auth/slack', (req, res) => {
           if (req.isAuthenticated()) {
             let answer = {
