@@ -7,7 +7,7 @@
     "start": "node index.js",
     "test": "DEBUG=*,-modem,-mocha:* mocha",
     "debug": "DEBUG=bouncer node index.js",
-    "start_nooauth": "DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none OAUTH_STARTUP_FAIL_ON_ERROR=false npm start"
+    "start_nooauth": "DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none OAUTH_STARTUP_TEST=false npm start"
   },
   "author": "o2r-project",
   "license": "Apache-2.0",
