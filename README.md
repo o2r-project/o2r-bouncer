@@ -53,6 +53,14 @@ docker-compose down -v
   Channel to post messages on user events, defaults to `#monitoring`.
 * `SLACK_USERNAMES_WHITELIST`
   A regex to check Slack usernames, which are allowed to react to interactive messages. Defaults to `.*` and the created regex is always case _in_sensitive. To allow specific users only, use e.g. `\\b(claerbout|peng|stodden)\\b` (case insensitive match of full words `claerbout`, `peng`, `stodden`).
+* `OAUTH_STARTUP_TEST`, `OAUTH_STARTUP_FAIL_ON_ERROR`, `OAUTH_SCOPE_TEST`
+  Use these parameters to configure testing of the OAuth configuration at startup by requesting the configured scope (default: `/read-public`), both variables default to `true`.
+
+### Used exit codes
+
+* `1` Maximum attempts to connect to MondoDB reached
+* `4` OAuth creditials configuration missing
+* `5` OAuth startup test failed
 
 ### Generating the client ID & secret
 
