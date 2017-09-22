@@ -18,4 +18,5 @@ install:
 #  - sleep 10
 script:
   - DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none OAUTH_STARTUP_TEST=false npm start &
+  - sleep 20
   - DEBUG=* npm test
