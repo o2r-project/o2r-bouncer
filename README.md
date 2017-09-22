@@ -32,11 +32,11 @@ docker-compose down -v
 * `BOUNCER_MONGODB_DATABASE`
   Which database inside the mongo db should be used. Defaults to `muncher`.
 * `OAUTH_URL_AUTHORIZATION`
-  Authorization URL for the ORCiD OAuth2 API. Defaults to `https://orcid.org/oauth/authorize`.
+  Authorization URL for the ORCID OAuth2 API. Defaults to `https://orcid.org/oauth/authorize`.
 * `OAUTH_URL_TOKEN`
-  Token URL for the ORCiD OAuth2 API. Defaults to `https://orcid.org/oauth/token`.
+  Token URL for the ORCID OAuth2 API. Defaults to `https://orcid.org/oauth/token`.
 * `OAUTH_SCOPE`
-  Scope for the ORCiD API. Defaults to `/authenticate`.
+  Scope for the ORCID API. Defaults to `/authenticate`.
 * `OAUTH_CLIENT_ID` __Required__
   The client ID for your instance.
 * `OAUTH_CLIENT_SECRET` __Required__
@@ -56,7 +56,7 @@ docker-compose down -v
 
 ### Generating the client ID & secret
 
-See the [ORCiD Guide](https://members.orcid.org/api/accessing-public-api). As a redirect URI you need to set the path `/api/v1/auth/login`, relative to your base url. We highly recommend using `https`. The client ID & secret then need to be provided as environment variables or directly saved to the `config/config.js` file.
+See the ORCID documentation [on accessing the public API](https://members.orcid.org/api/accessing-public-api) and [signing-in with ORCID iD](https://members.orcid.org/api/integrate/orcid-sign-in). As a redirect URI you need to set the path `/api/v1/auth/login`, relative to your base URL. We highly recommend using `https`. The client ID & secret then need to be provided as environment variables or directly saved to the `config/config.js` file.
 
 ## Slack bot
 
@@ -85,7 +85,7 @@ Start ngrok with `ngrok http 8083` and enter the public endpoint pointing to you
 
 You must provide the required settings as environment variables, either at start time or via the debug configuration of your IDE.
 
-To start bouncer with the required environment replace the respective settings with the actual values (check your ORCiD page) and execute the following command.
+To start bouncer with the required environment replace the respective settings with the actual values (check your ORCID iD page) and execute the following command.
 
 ```bash
 DEBUG=* OAUTH_CLIENT_ID=clientid OAUTH_CLIENT_SECRET=secret SLACK_VERIFICATION_TOKEN=token SLACK_BOT_TOKEN=xoxb-token npm start

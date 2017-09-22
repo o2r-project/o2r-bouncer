@@ -220,9 +220,9 @@ function initApp(callback) {
           orcid: req.user.orcid,
           name: req.user.name
         };
-        res.send(JSON.stringify(answer));
+        res.send(answer);
       } else {
-        res.status(401).send(JSON.stringify({ 'error': 'not authenticated' }));
+        res.status(401).send({ 'error': 'not authenticated' });
       }
     });
 
@@ -244,9 +244,9 @@ function initApp(callback) {
             let answer = {
               enabled: config.slack.enable
             };
-            res.send(JSON.stringify(answer));
+            res.send(answer);
           } else {
-            res.status(401).send(JSON.stringify({ 'error': 'not authenticated' }));
+            res.status(401).send({ 'error': 'not authenticated' });
           }
         });
 

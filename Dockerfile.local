@@ -1,4 +1,4 @@
-# (C) Copyright 2016 The o2r project. https://o2r.info
+# (C) Copyright 2017 o2r project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ RUN echo \
 RUN apk add --no-cache \
     nodejs \
     nodejs-npm \
-    dumb-init \
-  && rm -rf /var/cache
+    dumb-init
 
 WORKDIR /bouncer
 COPY config config
