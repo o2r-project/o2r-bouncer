@@ -16,7 +16,6 @@ install:
 before_script:
   - docker run --name mongodb -d -p 27017:27017 mongo:3.4
   - sleep 10
-  - DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none npm run start_nooauth &
-  - sleep 10
 script:
+  - DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none npm run start_nooauth & sleep 10 &
   - DEBUG=* npm test
