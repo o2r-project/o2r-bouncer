@@ -1,0 +1,21 @@
+---
+sudo: required
+language: node_js
+node_js:
+  - "8"
+services:
+  - docker
+cache:
+  directories:
+    - "node_modules"
+before_install:
+  - docker --version
+  - docker pull mongo:3.4
+install:
+  - npm install
+before_script:
+  - docker run --name mongodb -d -p 27017:27017 mongo:3.4
+  - sleep 10
+script:
+  - DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none npm start &
+  - DEBUG=* npm test
