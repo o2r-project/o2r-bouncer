@@ -1,6 +1,8 @@
 # o2r bouncer
 
-Node.js implementation for the oauth2-authentification process of the [o2r web api](https://o2r.info/o2r-web-api)
+[![Build Status](https://travis-ci.org/o2r-project/o2r-bouncer.svg?branch=master)](https://travis-ci.org/o2r-project/o2r-bouncer) [![](https://images.microbadger.com/badges/version/o2rproject/o2r-bouncer.svg)](https://microbadger.com/images/o2rproject/o2r-bouncer "Get your own version badge on microbadger.com")
+
+Node.js implementation for the OAuth2-based authentification process of the [o2r web api](https://o2r.info/o2r-web-api).
 
 Requirements:
 
