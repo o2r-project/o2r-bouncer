@@ -17,6 +17,7 @@
 
 const config = require('./config/config');
 const debug = require('debug')('bouncer');
+const colors = require('colors');
 
 // override global http proxy
 const globalTunnel = require('global-tunnel-ng');
@@ -36,7 +37,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const backoff = require('backoff');
-
+const request = require('request');
 const mongoose = require('mongoose');
 const User = require('./lib/model/user');
 const MongoStore = require('connect-mongodb-session')(session);
@@ -73,11 +74,47 @@ userPatchLevel = require('./lib/user').patchLevel;
 // make sure required settings without defaults are availabe
 if (typeof config.oauth.default.clientID == 'undefined' |
   typeof config.oauth.default.clientSecret == 'undefined') {
-  console.error("Cannot start bouncer because: %s %s",
-    (typeof config.oauth.default.clientID == 'undefined') ? "clientID is missing;" : "",
-    (typeof config.oauth.default.clientSecret == 'undefined') ? "clientSecret is missing;" : ""
+  console.error('Cannot start because: %s %s'.red,
+    (typeof config.oauth.default.clientID == 'undefined') ? 'clientID is missing;' : '',
+    (typeof config.oauth.default.clientSecret == 'undefined') ? 'clientSecret is missing;' : ''
   );
   process.exit(4);
+}
+
+// make sure required settings are valid
+if (config.oauth.startup.test) {
+  debug('Requesting %s credentials at %s to test OAuth configuration', config.oauth.default.testScope, config.oauth.default.tokenURL);
+  var options = {
+    uri: config.oauth.default.tokenURL,
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    form: {
+      client_id: config.oauth.default.clientID,
+      client_secret: config.oauth.default.clientSecret,
+      grant_type: "client_credentials",
+      scope: config.oauth.default.testScope
+    }
+  }
+
+  request(options, (err, response, body) => {
+    let resp = JSON.parse(body);
+    if (err || resp.error) {
+      debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
+        config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
+      if (config.oauth.startup.failOnError) {
+        console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
+        process.exit(5);
+      }
+    } else {
+      if (resp.access_token && resp.scope === config.oauth.default.testScope) {
+        debug('Retrieved access token and requested scope, all OK: %s'.green, JSON.stringify(resp));
+      } else {
+        debug('Did not receive expected response, continueing still... %s'.yellow, JSON.stringify(resp));
+      }
+    }
+  });
 }
 
 // configure oauth2 strategy for orcid use
@@ -135,12 +172,12 @@ function initApp(callback) {
       collection: 'sessions'
     }, err => {
       if (err) {
-        debug('Error starting MongoStore: %s', err);
+        debug('Error starting MongoStore: %s'.red, err);
       }
     });
 
     mongoStore.on('error', err => {
-      debug('Error with MongoStore: %s', err);
+      debug('Error with MongoStore: %s'.red, err);
     });
 
     app.use(session({
@@ -233,7 +270,7 @@ function initApp(callback) {
     if (config.slack.enable) {
       slackbot.start((err) => {
         if (err) {
-          debug('Error starting slackbot (disabling it now): %s', err);
+          debug('Error starting slackbot (disabling it now): %s'.red, err);
           config.slack.enable = false;
         }
       }, (done) => {
@@ -309,7 +346,7 @@ dbBackoff.on('ready', function (number, delay) {
   });
 });
 dbBackoff.on('fail', function () {
-  debug('Eventually giving up to connect to MongoDB');
+  debug('Eventually giving up to connect to MongoDB'.red);
   process.exit(1);
 });
 

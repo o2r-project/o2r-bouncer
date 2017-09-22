@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+const yn = require('yn');
+
 var c = {};
 c.version = {};
 c.net = {};
@@ -46,8 +48,14 @@ c.oauth.default = {
   clientID: env.OAUTH_CLIENT_ID,
   clientSecret: env.OAUTH_CLIENT_SECRET,
   scope: env.OAUTH_SCOPE || '/authenticate',
-  passReqToCallback: true // this allows us to retrieve the orcid from the accesstoken response.
+  passReqToCallback: true, // this allows us to retrieve the orcid from the accesstoken response
+  testScope: env.OAUTH_SCOPE_TEST || '/read-public'
 };
+c.oauth.startup = {
+  test: yn(env.OAUTH_STARTUP_TEST || 'true'),
+  failOnError: yn(env.OAUTH_STARTUP_FAIL_ON_ERROR || 'true')
+};
+
 // session secret
 c.sessionsecret = env.SESSION_SECRET || 'o2r';
 
