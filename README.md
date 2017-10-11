@@ -26,6 +26,8 @@ docker run --rm -it -e DEBUG=* bouncer
   Location for the mongo db. Defaults to `mongodb://localhost/`. You will very likely need to change this.
 * `BOUNCER_MONGODB_DATABASE`
   Which database inside the mongo db should be used. Defaults to `muncher`.
+* `BOUNCER_DEFAULT_USER_LEVEL`
+  What is the [user level](http://o2r.info/o2r-web-api/user/#user-levels) given to a new user upon registration? Defaults to `100` (known users).
 * `OAUTH_URL_AUTHORIZATION`
   Authorization URL for the ORCID OAuth2 API. Defaults to `https://orcid.org/oauth/authorize`.
 * `OAUTH_URL_TOKEN`
@@ -41,7 +43,7 @@ docker run --rm -it -e DEBUG=* bouncer
 * `SLACK_BOT_TOKEN`
   Authentication token for a bot app on Slack. See section [Slack bot](#slack-bot).
 * `SLACK_VERIFICATION_TOKEN`
-  Token provided by Slack for interative messages and events, to be used to verify that requests are actually coming from Slack.
+  Token provided by Slack for interactive messages and events, to be used to verify that requests are actually coming from Slack.
 * `SLACK_CHANNEL_STATUS`
   Channel to post status messages to, defaults to `#monitoring`.
 * `SLACK_CHANNEL_USER`
@@ -54,7 +56,7 @@ docker run --rm -it -e DEBUG=* bouncer
 ### Used exit codes
 
 * `1` Maximum attempts to connect to MondoDB reached
-* `4` OAuth creditials configuration missing
+* `4` OAuth credentials configuration missing
 * `5` OAuth startup test failed
 
 ### Generating the client ID & secret

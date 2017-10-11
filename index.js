@@ -297,6 +297,7 @@ function initApp(callback) {
         config.version,
         config.api_version,
         config.net.port);
+        debug('new users get the level %s', config.user.level.default);
     });
 
   } catch (err) {

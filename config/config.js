@@ -72,6 +72,7 @@ c.user.level.admin = 1000;
 c.user.level.editor = 500;
 c.user.level.known = 100;
 c.user.level.userEdit = c.user.level.editor;
+c.user.level.default = parseInt(env.BOUNCER_DEFAULT_USER_LEVEL) || c.user.level.known;
 
 // Slack
 c.slack = {};
