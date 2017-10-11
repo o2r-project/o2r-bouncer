@@ -11,18 +11,11 @@ Requirements:
 
 ## Dockerfile
 
-This project includes a `Dockerfile` which can be built with
+This project includes a `Dockerfile` which can be built and run with
 
 ```bash
-docker build -t o2r-bouncer .
-```
-
-The image can then be run and configured via environment variables. For convenience, we include a `docker-compose` configuration, which can be run with
-
-```bash
-cd docker-compose && docker-compose up
-# after you're done, shutdown and delete all volumes (data):
-docker-compose down -v
+docker build -t bouncer .
+docker run --rm -it -e DEBUG=* bouncer
 ```
 
 ### Available environment variables
