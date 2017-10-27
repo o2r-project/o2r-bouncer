@@ -198,5 +198,6 @@ before(function (done) {
     });
 
     sleep.sleep(1);
+    db.close();
     done();
 });
