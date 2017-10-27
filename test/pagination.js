@@ -21,7 +21,7 @@ const request = require('request');
 const config = require('../config/config');
 const chai = require('chai');
 
-require("./setup");;
+require("./setup");
 
 const cookie_o2r = 's:C0LIrsxGtHOGHld8Nv2jedjL4evGgEHo.GMsWD5Vveq0vBt7/4rGeoH5Xx7Dd2pgZR9DvhKCyDTY';
 const cookie_plain = 's:yleQfdYnkh-sbj9Ez--_TWHVhXeXNEgq.qRmINNdkRuJ+iHGg5woRa9ydziuJ+DzFG9GnAZRvaaM';
@@ -117,7 +117,7 @@ describe('User list pagination', () => {
     describe('pagination cases', () => {
         let all_users = []
 
-        before(function(done) {
+        before(function (done) {
             request(global.test_host + '/api/v1/user', (err, res, body) => {
                 assert.ifError(err);
                 all_users = JSON.parse(body).results;
@@ -134,7 +134,7 @@ describe('User list pagination', () => {
                 assert.property(response, 'results');
                 assert.notProperty(response, 'error');
                 assert.lengthOf(response.results, 2);
-                assert.includeMembers(response.results, all_users.slice(0,1));
+                assert.includeMembers(response.results, all_users.slice(0, 1));
                 done();
             });
         });
@@ -148,7 +148,7 @@ describe('User list pagination', () => {
                 assert.property(response, 'results');
                 assert.notProperty(response, 'error');
                 assert.lengthOf(response.results, 2);
-                assert.includeMembers(response.results, all_users.slice(3,4));
+                assert.includeMembers(response.results, all_users.slice(3, 4));
                 done();
             });
         });
@@ -162,8 +162,8 @@ describe('User list pagination', () => {
                 assert.property(response, 'results');
                 assert.notProperty(response, 'error');
                 assert.lengthOf(response.results, 1);
-                assert.deepEqual(response.results, all_users.slice(3,4));
-                assert.notIncludeDeepOrderedMembers(response.results, all_users.slice(0,3));
+                assert.deepEqual(response.results, all_users.slice(3, 4));
+                assert.notIncludeDeepOrderedMembers(response.results, all_users.slice(0, 3));
                 done();
             });
         });
