@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/o2r-project/o2r-bouncer.svg?branch=master)](https://travis-ci.org/o2r-project/o2r-bouncer) [![](https://images.microbadger.com/badges/version/o2rproject/o2r-bouncer.svg)](https://microbadger.com/images/o2rproject/o2r-bouncer "Get your own version badge on microbadger.com")
 
-Node.js implementation for the OAuth2-based authentification process of the [o2r web api](https://o2r.info/o2r-web-api).
+Node.js implementation for the OAuth2-based authentication process of the [o2r web api](https://o2r.info/o2r-web-api).
 
 Requirements:
 
@@ -15,7 +15,9 @@ This project includes a `Dockerfile` which can be built and run with
 
 ```bash
 docker build -t bouncer .
-docker run --rm -it -e DEBUG=* bouncer
+
+docker run --name mongodb -d mongo:3.4
+docker run --name testbouncer -it -p 8383:8083 --link mongodb:mongodb -e OAUTH_CLIENT_ID=none -e OAUTH_CLIENT_SECRET=none -e OAUTH_STARTUP_TEST=false -e BOUNCER_MONGODB=mongodb://mongodb:27017 -e DEBUG=* bouncer
 ```
 
 ### Available environment variables
@@ -51,7 +53,7 @@ docker run --rm -it -e DEBUG=* bouncer
 * `SLACK_USERNAMES_WHITELIST`
   A regex to check Slack usernames, which are allowed to react to interactive messages. Defaults to `.*` and the created regex is always case _in_sensitive. To allow specific users only, use e.g. `\\b(claerbout|peng|stodden)\\b` (case insensitive match of full words `claerbout`, `peng`, `stodden`).
 * `OAUTH_STARTUP_TEST`, `OAUTH_STARTUP_FAIL_ON_ERROR`, `OAUTH_SCOPE_TEST`
-  Use these parameters to configure testing of the OAuth configuration at startup by requesting the configured scope (default: `/read-public`), both variables default to `true`.
+  Use these parameters to configure testing of the OAuth configuration at startup by requesting the configured scope (default: `/read-public`), both boolean variables default to `true`.
 
 ### Used exit codes
 
