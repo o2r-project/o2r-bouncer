@@ -15,7 +15,7 @@ before_script:
   - docker run --name testbouncer -d -p 8083:8083 --link mongodb:mongodb -e OAUTH_CLIENT_ID=none -e OAUTH_CLIENT_SECRET=none -e OAUTH_STARTUP_TEST=false -e BOUNCER_MONGODB=mongodb://mongodb:27017 -e DEBUG=* bouncer
   - sleep 10
 script:
-  - npm test
+  - DEBUG=* npm test
 after_failure:
   - sleep 5
   - docker logs testbouncer
