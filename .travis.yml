@@ -12,7 +12,7 @@ install:
 before_script:
   - docker run --name mongodb -d -p 27017:27017 mongo:3.4
   - docker build --tag bouncer .
-  - docker run --name testbouncer -it -p 8083:8083 --link mongodb:mongodb -e OAUTH_CLIENT_ID=none -e OAUTH_CLIENT_SECRET=none -e OAUTH_STARTUP_TEST=false -e BOUNCER_MONGODB=mongodb://mongodb:27017 -e DEBUG=* bouncer
+  - docker run --name testbouncer -d -p 8083:8083 --link mongodb:mongodb -e OAUTH_CLIENT_ID=none -e OAUTH_CLIENT_SECRET=none -e OAUTH_STARTUP_TEST=false -e BOUNCER_MONGODB=mongodb://mongodb:27017 -e DEBUG=* bouncer
   - sleep 10
 script:
   - npm test
