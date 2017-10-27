@@ -37,13 +37,18 @@ global.test_host = env.TEST_HOST || 'http://localhost:' + config.net.port;
 console.log('Testing endpoint at ' + global.test_host);
 
 before(function (done) {
-    this.timeout(20000);
+    this.timeout(10000);
 
-    var db = mongojs('localhost/muncher', ['users', 'sessions', 'compendia', 'jobs']);
+    var db = mongojs('localhost/muncher', ['users', 'sessions']);
 
     db.sessions.drop(function (err, doc) {
         //if (err) throw err;
     });
+    db.users.drop(function (err, doc) {
+        //if (err) throw err;
+    });
+    sleep.sleep(1);
+
     var session_o2r = {
         '_id': sessionId_o2r,
         'session': {
@@ -192,6 +197,6 @@ before(function (done) {
         if (err) throw err;
     });
 
-    sleep.sleep(1); // take a little break instead of adding some async wrappers around above statements
+    sleep.sleep(1);
     done();
 });
