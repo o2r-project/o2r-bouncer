@@ -48,7 +48,7 @@ c.oauth.default = {
   clientID: env.OAUTH_CLIENT_ID,
   clientSecret: env.OAUTH_CLIENT_SECRET,
   scope: env.OAUTH_SCOPE || '/authenticate',
-  passReqToCallback: true, // this allows us to retrieve the orcid from the accesstoken response
+  passReqToCallback: true, // this allows us to retrieve the users ORCID identifier from the access token response
   testScope: env.OAUTH_SCOPE_TEST || '/read-public'
 };
 c.oauth.startup = {
