@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM alpine:3.6
+FROM node:8-alpine
 
 # Add Alpine mirrors, replacing default repositories with edge ones, based on https://github.com/jfloff/alpine-python/blob/master/3.4/Dockerfile
 RUN echo \
@@ -21,17 +21,16 @@ RUN echo \
   && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
 
 RUN apk add --no-cache \
-    nodejs \
     dumb-init \
-    nodejs-npm \
   && rm -rf /var/cache
 
 WORKDIR /bouncer
+COPY package.json package.json
+RUN npm install --production
+
 COPY config config
 COPY lib lib
 COPY index.js index.js
-COPY package.json package.json
-RUN npm install --production
 
 # Metadata params provided with docker build command
 ARG VERSION=dev
