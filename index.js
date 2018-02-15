@@ -48,10 +48,12 @@ const slackbot = require('./lib/slack');
 mongoose.Promise = global.Promise;
 
 const dbURI = config.mongo.location + config.mongo.database;
-mongoose.connect(dbURI, {
-  useMongoClient: true,
-  promiseLibrary: global.Promise // use ES6 promises for underlying MongoDB DRIVE
-});
+const dbOptions = {
+  keepAlive: 30000,
+  socketTimeoutMS: 30000,
+  promiseLibrary: global.Promise
+};
+mongoose.connect(dbURI, dbOptions);
 mongoose.connection.on('error', (err) => {
   debug('Could not connect to MongoDB @ %s: %s', dbURI, err);
 });
@@ -109,9 +111,9 @@ if (config.oauth.startup.test) {
       }
     } else {
       if (resp.access_token && resp.scope === config.oauth.default.testScope) {
-        debug('Retrieved access token and requested scope, all OK: %s'.green, JSON.stringify(resp));
+        debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
       } else {
-        debug('Did not receive expected response, continueing still... %s'.yellow, JSON.stringify(resp));
+        debug('Did not receive expected response, continuing still... %o'.yellow, resp);
       }
     }
   });
@@ -229,12 +231,12 @@ function initApp(callback) {
       debug('Receiving callback from authentication service. User %s logged in with session %s.', req.user.orcid, req.sessionID);
       User.findOne({ orcid: req.user.orcid }, (err, user) => {
         if (err) {
-          debug('Could not retrieve user who just logged in from database: %s', JSON.stringify(err));
+          debug('Could not retrieve user who just logged in from database: %o', err);
         }
         user.lastseenAt = new Date();
         user.save((err) => {
           if (err) {
-            debug('Could not update field "lastseenAt" for user who just logged in, error: %s', JSON.stringify(err));
+            debug('Could not update field "lastseenAt" for user who just logged in, error: %o', err);
           }
         });
       });
@@ -246,7 +248,7 @@ function initApp(callback) {
       // simple req.logout seems not to suffice for some users: http://stackoverflow.com/questions/13758207/why-is-passportjs-in-node-not-removing-session-on-logout
       req.logout();
       req.session.destroy(function (err) {
-        debug('User session %s is logged out, and session is destroyed, error: %s', req.sessionID, JSON.stringify(err));
+        debug('User session %s is logged out, and session is destroyed, error: %o', req.sessionID, err);
         res.redirect(config.logout.redirect);
       });
     });
@@ -274,7 +276,7 @@ function initApp(callback) {
           config.slack.enable = false;
         }
       }, (done) => {
-        debug('Slack bot enabled and configured - nice! Message response was \n%s', JSON.stringify(done));
+        debug('Slack bot enabled and configured - nice! Message response was %o', done);
 
         app.get('/api/v1/auth/slack', (req, res) => {
           if (req.isAuthenticated()) {
@@ -320,10 +322,7 @@ dbBackoff.on('backoff', function (number, delay) {
 });
 dbBackoff.on('ready', function (number, delay) {
   debug('Connect to MongoDB (#%s) ...', number);
-  mongoose.connect(dbURI, {
-    useMongoClient: true,
-    promiseLibrary: global.Promise
-  }, (err) => {
+  mongoose.connect(dbURI, dbOptions, (err) => {
     if (err) {
       debug('Error during connect: %s', err);
       mongoose.disconnect(() => {
