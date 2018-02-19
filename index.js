@@ -98,10 +98,11 @@ if (config.oauth.startup.test) {
       grant_type: "client_credentials",
       scope: config.oauth.default.testScope
     }
-  }
+  };
 
   request(options, (err, response, body) => {
-    let resp = JSON.parse(body);
+    let resp;
+    if (body) { resp = JSON.parse(body); }
     if (err || resp.error) {
       debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
         config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
