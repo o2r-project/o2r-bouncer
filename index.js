@@ -83,43 +83,6 @@ if (typeof config.oauth.default.clientID == 'undefined' |
   process.exit(4);
 }
 
-// make sure required settings are valid
-if (config.oauth.startup.test) {
-  debug('Requesting %s credentials at %s to test OAuth configuration', config.oauth.default.testScope, config.oauth.default.tokenURL);
-  var options = {
-    uri: config.oauth.default.tokenURL,
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    form: {
-      client_id: config.oauth.default.clientID,
-      client_secret: config.oauth.default.clientSecret,
-      grant_type: "client_credentials",
-      scope: config.oauth.default.testScope
-    }
-  };
-
-  request(options, (err, response, body) => {
-    let resp;
-    if (body) { resp = JSON.parse(body); }
-    if (err || resp.error) {
-      debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
-        config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
-      if (config.oauth.startup.failOnError) {
-        console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
-        process.exit(5);
-      }
-    } else {
-      if (resp.access_token && resp.scope === config.oauth.default.testScope) {
-        debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
-      } else {
-        debug('Did not receive expected response, continuing still... %o'.yellow, resp);
-      }
-    }
-  });
-}
-
 // configure oauth2 strategy for orcid use
 const oauth2 = new OAuth2Strat(
   config.oauth.default,
@@ -168,6 +131,43 @@ passport.deserializeUser((id, cb) => {
 
 function initApp(callback) {
   debug('Initialize application');
+
+  // make sure required settings are valid
+  if (config.oauth.startup.test) {
+      debug('Requesting %s credentials at %s to test OAuth configuration', config.oauth.default.testScope, config.oauth.default.tokenURL);
+      var options = {
+          uri: config.oauth.default.tokenURL,
+          method: 'POST',
+          headers: {
+              'Content-type': 'application/json'
+          },
+          form: {
+              client_id: config.oauth.default.clientID,
+              client_secret: config.oauth.default.clientSecret,
+              grant_type: "client_credentials",
+              scope: config.oauth.default.testScope
+          }
+      };
+
+      request(options, (err, response, body) => {
+          let resp;
+          if (body) { resp = JSON.parse(body); }
+          if (err || resp.error) {
+              debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
+                  config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
+              if (config.oauth.startup.failOnError) {
+                  console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
+                  process.exit(5);
+              }
+          } else {
+              if (resp.access_token && resp.scope === config.oauth.default.testScope) {
+                  debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
+              } else {
+                  debug('Did not receive expected response, continuing still... %o'.yellow, resp);
+              }
+          }
+      });
+  }
 
   try {
     const mongoStore = new MongoStore({
