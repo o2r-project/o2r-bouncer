@@ -65,6 +65,28 @@ docker run --name testbouncer -it -p 8383:8083 --link mongodb:mongodb -e OAUTH_C
 
 See the ORCID documentation [on accessing the public API](https://members.orcid.org/api/accessing-public-api) and [signing-in with ORCID iD](https://members.orcid.org/api/integrate/orcid-sign-in). As a redirect URI you need to set the path `/api/v1/auth/login`, relative to your base URL. We highly recommend using `https`. The client ID & secret then need to be provided as environment variables or directly saved to the `config/config.js` file.
 
+When using the [o2r-guestlister](https://github.com/o2r-project/o2r-guestlister) offline OAuth2 implementation, the client ID and secret have to be identical to the values the o2r-guestlister is using.
+As long as these values match, they can be chosen freely.
+
+To match the default guestlister configuration the bouncer has to be configured to access the correct OAuth server:
+
+* `OAUTH_URL_AUTHORIZATION=http://.../oauth/authorize`
+* `OAUTH_URL_TOKEN=http://.../oauth/token`
+* `OAUTH_URL_CALLBACK=http://.../api/v1/auth/login`
+
+Keep in mind that `OAUTH_URL_TOKEN` is called by the bouncer, which means it has to be configured in respect to the bouncer's environment.
+This is especially relevant when bouncer is running inside a container.
+While `localhost` might work for development outside containers, the URL must use the proper host name in configurations based on docker-compose.
+
+`OAUTH_URL_AUTHORIZATION` and `OAUTH_URL_CALLBACK` are called by the client.
+
+### Sessions
+
+The [express-session](https://github.com/expressjs/session) middleware is used to manage logged in users.
+After logging in via `/api/v1/auth/login`, a session cookie containing encoded information to identify the user is stored in the database. 
+
+The same cookie is sent to the client and allows continuous access to the o2r platform.
+
 ## Slack bot
 
 Documentation of Slack API: https://api.slack.com/bot-users, especially [interactive messages](https://api.slack.com/interactive-messages).

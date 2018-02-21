@@ -74,49 +74,57 @@ userViewSingle = require('./lib/user').viewSingle;
 userPatchLevel = require('./lib/user').patchLevel;
 
 // make sure required settings without defaults are availabe
-if (typeof config.oauth.default.clientID == 'undefined' |
-  typeof config.oauth.default.clientSecret == 'undefined') {
+if (typeof config.oauth.default.clientID === 'undefined' ||
+  typeof config.oauth.default.clientSecret === 'undefined') {
   console.error('Cannot start because: %s %s'.red,
-    (typeof config.oauth.default.clientID == 'undefined') ? 'clientID is missing;' : '',
-    (typeof config.oauth.default.clientSecret == 'undefined') ? 'clientSecret is missing;' : ''
+    (typeof config.oauth.default.clientID === 'undefined') ? 'clientID is missing;' : '',
+    (typeof config.oauth.default.clientSecret === 'undefined') ? 'clientSecret is missing;' : ''
   );
   process.exit(4);
 }
 
 // make sure required settings are valid
 if (config.oauth.startup.test) {
-  debug('Requesting %s credentials at %s to test OAuth configuration', config.oauth.default.testScope, config.oauth.default.tokenURL);
-  var options = {
-    uri: config.oauth.default.tokenURL,
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    form: {
-      client_id: config.oauth.default.clientID,
-      client_secret: config.oauth.default.clientSecret,
-      grant_type: "client_credentials",
-      scope: config.oauth.default.testScope
-    }
-  }
+    debug('Requesting %s credentials at %s to test OAuth configuration', config.oauth.default.testScope, config.oauth.default.tokenURL);
+    var options = {
+        uri: config.oauth.default.tokenURL,
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        form: {
+            client_id: config.oauth.default.clientID,
+            client_secret: config.oauth.default.clientSecret,
+            grant_type: "client_credentials",
+            scope: config.oauth.default.testScope
+        }
+    };
 
-  request(options, (err, response, body) => {
-    let resp = JSON.parse(body);
-    if (err || resp.error) {
-      debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
-        config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
-      if (config.oauth.startup.failOnError) {
-        console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
-        process.exit(5);
-      }
-    } else {
-      if (resp.access_token && resp.scope === config.oauth.default.testScope) {
-        debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
-      } else {
-        debug('Did not receive expected response, continuing still... %o'.yellow, resp);
-      }
-    }
-  });
+    request(options, (err, response, body) => {
+        let resp = {};
+        if (body) {
+            try {
+                resp = JSON.parse(body);
+            } catch (err) {
+                debug('Error parsing startup test response: %s', err);
+            }
+        }
+
+        if (err || resp.error) {
+            debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
+                config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
+            if (config.oauth.startup.failOnError) {
+                console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
+                process.exit(5);
+            }
+        } else {
+            if (resp.access_token && resp.scope === config.oauth.default.testScope) {
+                debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
+            } else {
+                debug('Did not receive expected response, continuing still... %o'.yellow, resp);
+            }
+        }
+    });
 }
 
 // configure oauth2 strategy for orcid use
@@ -167,7 +175,6 @@ passport.deserializeUser((id, cb) => {
 
 function initApp(callback) {
   debug('Initialize application');
-
   try {
     const mongoStore = new MongoStore({
       uri: config.mongo.location + config.mongo.database,
