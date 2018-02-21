@@ -70,9 +70,9 @@ As long as these values match, they can be chosen freely.
 
 To match the default guestlister configuration the bouncer has to be configured to access the correct OAuth server:
 
-* `OAUTH_URL_AUTHORIZATION=http://.../oauth/authorize` 
-* `OAUTH_URL_TOKEN=http://.../oauth/token` 
-* `OAUTH_URL_CALLBACK=http://.../api/v1/auth/login` Bouncer 
+* `OAUTH_URL_AUTHORIZATION=http://.../oauth/authorize`
+* `OAUTH_URL_TOKEN=http://.../oauth/token`
+* `OAUTH_URL_CALLBACK=http://.../api/v1/auth/login`
 
 Keep in mind that `OAUTH_URL_TOKEN` is evoked by the bouncer, which means it has to be configured in respect to the bouncer's environment. 
 
