@@ -74,9 +74,11 @@ To match the default guestlister configuration the bouncer has to be configured 
 * `OAUTH_URL_TOKEN=http://.../oauth/token`
 * `OAUTH_URL_CALLBACK=http://.../api/v1/auth/login`
 
-Keep in mind that `OAUTH_URL_TOKEN` is evoked by the bouncer, which means it has to be configured in respect to the bouncer's environment. 
+Keep in mind that `OAUTH_URL_TOKEN` is called by the bouncer, which means it has to be configured in respect to the bouncer's environment.
+This is especially relevant when bouncer is running inside a container.
+While `localhost` might work for development outside containers, the URL must use the proper host name in configurations based on docker-compose.
 
-`OAUTH_URL_AUTHORIZATION` and `OAUTH_URL_CALLBACK` are evoked by the client.
+`OAUTH_URL_AUTHORIZATION` and `OAUTH_URL_CALLBACK` are called by the client.
 
 ### Sessions
 
