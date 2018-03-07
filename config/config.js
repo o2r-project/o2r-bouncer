@@ -15,6 +15,7 @@
  *
  */
 const yn = require('yn');
+const debug = require('debug')('bouncer:config');
 
 var c = {};
 c.version = {};
@@ -40,13 +41,13 @@ if (c.mongo.location[c.mongo.location.length-1] !== '/') {
   c.mongo.location += '/';
 }
 
-// oauth providers
+// oauth providers, default configuration works with o2r-guestlister
 c.oauth.default = {
-  authorizationURL: env.OAUTH_URL_AUTHORIZATION || 'https://orcid.org/oauth/authorize',
-  tokenURL: env.OAUTH_URL_TOKEN || 'https://pub.orcid.org/oauth/token',
+  authorizationURL: env.OAUTH_URL_AUTHORIZATION || 'http://localhost:8383/oauth/authorize', //'https://orcid.org/oauth/authorize',
+  tokenURL: env.OAUTH_URL_TOKEN || 'http://localhost:8383/oauth/token', //'https://pub.orcid.org/oauth/token',
   callbackURL: env.OAUTH_URL_CALLBACK || 'http://localhost:' + c.net.port + '/api/v1/auth/login',
-  clientID: env.OAUTH_CLIENT_ID,
-  clientSecret: env.OAUTH_CLIENT_SECRET,
+  clientID: env.OAUTH_CLIENT_ID || "testClient",
+  clientSecret: env.OAUTH_CLIENT_SECRET || "testSecret",
   scope: env.OAUTH_SCOPE || '/authenticate',
   passReqToCallback: true, // this allows us to retrieve the users ORCID identifier from the access token response
   testScope: env.OAUTH_SCOPE_TEST || '/read-public'
@@ -83,5 +84,7 @@ c.slack.channel = {};
 c.slack.channel.status = process.env.SLACK_CHANNEL_STATUS || '#monitoring';
 c.slack.channel.userevents = process.env.SLACK_CHANNEL_USER ||'#monitoring';
 c.slack.allowedUsers = new RegExp(process.env.SLACK_USERNAMES_WHITELIST, 'i') || new RegExp('.*', 'i');
+
+debug('CONFIGURATION:\n%O', c);
 
 module.exports = c;
