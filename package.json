@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "DEBUG=*,-modem mocha",
-    "debug": "DEBUG=bouncer node index.js",
-    "start_nooauth": "DEBUG=bouncer,bouncer:* OAUTH_CLIENT_ID=none OAUTH_CLIENT_SECRET=none OAUTH_STARTUP_TEST=false npm start"
+    "test": "DEBUG=*,-modem mocha"
   },
   "author": "o2r-project",
   "license": "Apache-2.0",
