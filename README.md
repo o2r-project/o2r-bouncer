@@ -25,7 +25,7 @@ docker run --name testbouncer -it -p 8383:8083 --link mongodb:mongodb -e OAUTH_C
 * `BOUNCER_PORT`
   Define on which Port muncher should listen. Defaults to `8083`.
 * `BOUNCER_MONGODB` __Required__
-  Location for the mongo db. Defaults to `mongodb://localhost/`. You will very likely need to change this.
+  Location for the mongo db. Defaults to `mongodb://localhost:27017/`. You will very likely need to change this.
 * `BOUNCER_MONGODB_DATABASE`
   Which database inside the mongo db should be used. Defaults to `muncher`.
 * `BOUNCER_DEFAULT_USER_LEVEL`

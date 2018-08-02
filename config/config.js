@@ -30,7 +30,7 @@ c.version = require('../package.json').version;
 
 // network & database
 c.net.port         = env.BOUNCER_PORT || 8083;
-c.mongo.location   = env.BOUNCER_MONGODB || 'mongodb://localhost/';
+c.mongo.location   = env.BOUNCER_MONGODB || 'mongodb://localhost:27017/';
 c.mongo.database   = env.BOUNCER_MONGODB_DATABASE || 'muncher';
 c.mongo.initial_connection_attempts = 30;
 c.mongo.initial_connection_max_delay = 3000;

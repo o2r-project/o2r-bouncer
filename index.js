@@ -48,11 +48,15 @@ const slackbot = require('./lib/slack');
 mongoose.Promise = global.Promise;
 
 const dbURI = config.mongo.location + config.mongo.database;
-const dbOptions = {
+var dbOptions = {
+  autoReconnect: true,
+  reconnectTries: Number.MAX_VALUE,
   keepAlive: 30000,
   socketTimeoutMS: 30000,
-  promiseLibrary: global.Promise
+  promiseLibrary: mongoose.Promise,
+  useNewUrlParser: true
 };
+
 mongoose.connect(dbURI, dbOptions);
 mongoose.connection.on('error', (err) => {
   debug('Could not connect to MongoDB @ %s: %s', dbURI, err);
