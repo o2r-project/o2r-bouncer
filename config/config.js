@@ -43,8 +43,8 @@ if (c.mongo.location[c.mongo.location.length-1] !== '/') {
 
 // oauth providers, default configuration works with o2r-guestlister
 c.oauth.default = {
-  authorizationURL: env.OAUTH_URL_AUTHORIZATION || 'http://localhost:8383/oauth/authorize', //'https://orcid.org/oauth/authorize',
-  tokenURL: env.OAUTH_URL_TOKEN || 'http://localhost:8383/oauth/token', //'https://pub.orcid.org/oauth/token',
+  authorizationURL: env.OAUTH_URL_AUTHORIZATION || 'http://localhost:8383/oauth/authorize',
+  tokenURL: env.OAUTH_URL_TOKEN || 'http://localhost:8383/oauth/token',
   callbackURL: env.OAUTH_URL_CALLBACK || 'http://localhost:' + c.net.port + '/api/v1/auth/login',
   clientID: env.OAUTH_CLIENT_ID || "testClient",
   clientSecret: env.OAUTH_CLIENT_SECRET || "testSecret",

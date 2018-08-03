@@ -31,9 +31,9 @@ docker run --name testbouncer -it -p 8383:8083 --link mongodb:mongodb -e OAUTH_C
 * `BOUNCER_DEFAULT_USER_LEVEL`
   What is the [user level](http://o2r.info/o2r-web-api/user/#user-levels) given to a new user upon registration? Defaults to `100` (known users).
 * `OAUTH_URL_AUTHORIZATION`
-  Authorization URL for the ORCID OAuth2 API. Defaults to `https://orcid.org/oauth/authorize`.
+  Authorization URL for the ORCID OAuth2 API. Defaults to `'http://localhost:8383/oauth/authorize` for use with o2r-guestlister, other values could be `https://orcid.org/oauth/authorize` or `https://sandbox.orcid.org/oauth/authorize`.
 * `OAUTH_URL_TOKEN`
-  Token URL for the ORCID OAuth2 API. Defaults to `https://orcid.org/oauth/token`.
+  Token URL for the ORCID OAuth2 API. Defaults to `'http://localhost:8383/oauth/token` for use with o2r-guestlister, other values could be `https://orcid.org/oauth/token` or `https://sandbox.orcid.org/oauth/token` .
 * `OAUTH_SCOPE`
   Scope for the ORCID API. Defaults to `/authenticate`.
 * `OAUTH_CLIENT_ID` __Required__
@@ -68,7 +68,7 @@ See the ORCID documentation [on accessing the public API](https://members.orcid.
 When using the [o2r-guestlister](https://github.com/o2r-project/o2r-guestlister) offline OAuth2 implementation, the client ID and secret have to be identical to the values the o2r-guestlister is using.
 As long as these values match, they can be chosen freely.
 
-To match the default guestlister configuration the bouncer has to be configured to access the correct OAuth server:
+To match the default o2r-guestlister configuration the bouncer has to be configured to access the correct OAuth server:
 
 * `OAUTH_URL_AUTHORIZATION=http://.../oauth/authorize`
 * `OAUTH_URL_TOKEN=http://.../oauth/token`
