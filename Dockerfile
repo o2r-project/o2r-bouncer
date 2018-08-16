@@ -41,7 +41,7 @@ ARG BUILD_DATE
 # Metadata http://label-schema.org/rc1/
 LABEL maintainer="o2r-project <https://o2r.info>" \
   org.label-schema.vendor="o2r project" \
-  org.label-schema.url="http://o2r.info" \
+  org.label-schema.url="https://o2r.info" \
   org.label-schema.name="o2r bouncer" \
   org.label-schema.description="user authentication for o2r API" \    
   org.label-schema.version=$VERSION \
