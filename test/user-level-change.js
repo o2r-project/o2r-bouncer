@@ -137,10 +137,10 @@ describe('Editing user levels', () => {
         let ck = request.cookie('connect.sid=' + cookie_plain);
         j.setCookie(ck, global.test_host);
 
-        it('should response with HTTP 401', (done) => {
+        it('should response with HTTP 403', (done) => {
             request({ url: user_url + '?level=' + 9999, jar: j, method: "PATCH" }, (err, res) => {
                 assert.ifError(err);
-                assert.equal(res.statusCode, 401);
+                assert.equal(res.statusCode, 403);
                 done();
             });
         });

@@ -31,7 +31,7 @@ const cookie_editor = 's:xWHihqZq6jEAObwbfowO5IwdnBxohM7z.VxqsRC5A1VqJVspChcxVPu
 describe('User list pagination', () => {
     describe('illegal pagination parameters', () => {
         
-        it('should response with HTTP 400 and valid JSON error when start is too small', (done) => {
+        it('should respond with HTTP 400 and valid JSON error when start is too small', (done) => {
             request(global.test_host + '/api/v1/user?start=-1', (err, res, body) => {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 400);
@@ -45,7 +45,7 @@ describe('User list pagination', () => {
             });
         });
         
-        it('should response with HTTP 400 and valid JSON error when start is text', (done) => {
+        it('should respond with HTTP 400 and valid JSON error when start is text', (done) => {
             request(global.test_host + '/api/v1/user?start=start', (err, res, body) => {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 400);
