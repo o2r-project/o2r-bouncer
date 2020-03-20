@@ -38,7 +38,7 @@ console.log('Testing endpoint at ' + global.test_host);
 var db = mongojs('localhost/muncher', ['users', 'sessions']);
 
 before(function (done) {
-    this.timeout(10000);
+    this.timeout(30000);
 
     var session_o2r = {
         '_id': sessionId_o2r,
