@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/o2r-project/o2r-bouncer.svg?branch=master)](https://travis-ci.org/o2r-project/o2r-bouncer) [![](https://images.microbadger.com/badges/version/o2rproject/o2r-bouncer.svg)](https://microbadger.com/images/o2rproject/o2r-bouncer "Get your own version badge on microbadger.com")
 
-Node.js implementation for the OAuth2-based authentication process of the [o2r web api](https://o2r.info/o2r-web-api).
+Node.js implementation for the OAuth2-based authentication process of the [o2r API](https://o2r.info/api).
 
 Requirements:
 
@@ -29,7 +29,7 @@ docker run --name testbouncer -it -p 8383:8083 --link mongodb:mongodb -e OAUTH_C
 * `BOUNCER_MONGODB_DATABASE`
   Which database inside the mongo db should be used. Defaults to `muncher`.
 * `BOUNCER_DEFAULT_USER_LEVEL`
-  What is the [user level](http://o2r.info/o2r-web-api/user/#user-levels) given to a new user upon registration? Defaults to `100` (known users).
+  What is the [user level](https://o2r.info/api/user/#user-levels) given to a new user upon registration? Defaults to `100` (known users).
 * `OAUTH_URL_AUTHORIZATION`
   Authorization URL for the ORCID OAuth2 API. Defaults to `'http://localhost:8383/oauth/authorize` for use with o2r-guestlister, other values could be `https://orcid.org/oauth/authorize` or `https://sandbox.orcid.org/oauth/authorize`.
 * `OAUTH_URL_TOKEN`

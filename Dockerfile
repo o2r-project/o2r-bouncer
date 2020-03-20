@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM node:8-alpine
+FROM node:12-alpine
 
 # Add Alpine mirrors, replacing default repositories with edge ones, based on https://github.com/jfloff/alpine-python/blob/master/3.4/Dockerfile
 RUN echo \
@@ -41,7 +41,7 @@ ARG BUILD_DATE
 # Metadata http://label-schema.org/rc1/
 LABEL maintainer="o2r-project <https://o2r.info>" \
   org.label-schema.vendor="o2r project" \
-  org.label-schema.url="http://o2r.info" \
+  org.label-schema.url="https://o2r.info" \
   org.label-schema.name="o2r bouncer" \
   org.label-schema.description="user authentication for o2r API" \    
   org.label-schema.version=$VERSION \
