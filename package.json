@@ -1,6 +1,6 @@
 {
   "name": "bouncer",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "Node.js implementation of authentication features of the [o2r web api](http://o2r.info/o2r-web-api).",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "express-session": "^1.17.0",
     "global-tunnel-ng": "^2.7.1",
     "identifiers-orcid": "^0.1.1",
-    "mongoose": "^5.9.4",
+    "mongoose": "^5.9.6",
     "mongoose-timestamp": "^0.6.0",
     "passport": "^0.4.1",
     "passport-oauth2": "^1.5.0",
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^7.1.0",
+    "mocha": "^7.1.1",
     "mongojs": "^3.1.0",
     "sleep": "^6.1.0"
   }
