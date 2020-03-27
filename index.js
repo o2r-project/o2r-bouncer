@@ -105,29 +105,31 @@ if (config.oauth.startup.test) {
     };
 
     request(options, (err, response, body) => {
-        let resp = {};
-        if (body) {
-            try {
-                resp = JSON.parse(body);
-            } catch (err) {
-                debug('Error parsing startup test response: %s', err);
-            }
-        }
-
-        if (err || resp.error) {
-            debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
-                config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
-            if (config.oauth.startup.failOnError) {
-                console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
-                process.exit(5);
-            }
-        } else {
-            if (resp.access_token && resp.scope === config.oauth.default.testScope) {
-                debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
-            } else {
-                debug('Did not receive expected response, continuing still... %o'.yellow, resp);
-            }
-        }
+      let resp = {};
+      if (body) {
+          try {
+              resp = JSON.parse(body);
+          } catch (err) {
+              debug('Error parsing startup test response: %s', err);
+              return;
+          }
+      }
+      debug('Response for OAuth test: %o', resp);
+      
+      if (err || resp.error) {
+          debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
+              config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
+          if (config.oauth.startup.failOnError) {
+              console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
+              process.exit(5);
+          }
+      } else {
+          if (resp.access_token && resp.scope === config.oauth.default.testScope) {
+              debug('Retrieved access token and requested scope, all OK: %o'.green, resp);
+          } else {
+              debug('Did not receive expected response, continuing still... %o'.yellow, resp);
+          }
+      }
     });
 }
 
