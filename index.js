@@ -117,8 +117,8 @@ if (config.oauth.startup.test) {
       debug('Response for OAuth test: %o', resp);
       
       if (err || resp.error) {
-          debug('Error validating OAuth credentials (fail start? %s): err: %s response: %s'.red,
-              config.oauth.startup.failOnError.toString().toUpperCase(), JSON.stringify(err), JSON.stringify(resp));
+          debug('Error validating OAuth credentials (fail start? %s):\n\t Error: %o\n\tResponse: %o'.red,
+              config.oauth.startup.failOnError.toString().toUpperCase(), err, resp);
           if (config.oauth.startup.failOnError) {
               console.error('Shutting down because OAuth startup test failed: %s'.red, JSON.stringify(resp));
               process.exit(5);
