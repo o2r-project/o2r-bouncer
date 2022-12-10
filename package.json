@@ -20,7 +20,7 @@
     "compression": "^1.7.4",
     "connect-mongodb-session": "^2.3.1",
     "debug": "^4.1.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.17.0",
     "global-tunnel-ng": "^2.7.1",
     "identifiers-orcid": "^0.1.1",
